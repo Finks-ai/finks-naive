@@ -1,11 +1,13 @@
 """
 Agent Registry - Central registry for managing agent instances with builder pattern.
+Also holds shared configurations and AI agent instances as singletons.
 """
 
 from typing import Dict, Any, Type, Optional, List
 from enum import Enum
 from dataclasses import dataclass
 from loguru import logger
+from pydantic_ai import Agent
 
 
 class AgentType(str, Enum):
@@ -125,10 +127,27 @@ class AgentRegistryBuilder:
 
 
 class AgentRegistry:
-    """Registry for managing agent instances and metadata."""
+    """Registry for managing agent instances and metadata.
+    
+    Also holds shared configurations and AI agent instances as class attributes
+    for Lambda container reuse.
+    """
+    
+    # Shared configurations (loaded once per container)
+    _field_mappings: Optional[Dict[str, str]] = None
+    _available_fields: Optional[List[str]] = None
+    _field_instructions: Optional[Dict[str, str]] = None
+    _field_categories: Optional[Dict[str, Any]] = None
+    _unavailable_fields: Optional[List[str]] = None
+    
+    # AI Agent instances (created once per container)
+    _ai_agents: Dict[AgentType, Agent] = {}
     
     def __init__(self):
         self._agents: Dict[AgentType, AgentInfo] = {}
+        # Initialize shared configurations on first instance
+        if AgentRegistry._field_mappings is None:
+            self._initialize_shared_configs()
     
     def builder(self) -> AgentRegistryBuilder:
         """Create a builder for this registry instance."""
@@ -189,6 +208,153 @@ class AgentRegistry:
         """Clear all registered agents."""
         self._agents.clear()
         logger.debug("Cleared agent registry")
+    
+    def _initialize_shared_configs(self):
+        """Initialize shared configurations once per container."""
+        from app.core.config_loader import load_config
+        
+        logger.info("Initializing shared agent configurations...")
+        
+        try:
+            # Load field mappings
+            config = load_config("field_mappings")
+            AgentRegistry._field_mappings = config.get("field_mappings", {})
+            AgentRegistry._available_fields = list(AgentRegistry._field_mappings.keys())
+            
+            # Load field instructions
+            AgentRegistry._field_instructions = load_config("field_instructions")
+            
+            # Load field categories
+            AgentRegistry._field_categories = load_config("field_categories")
+            
+            # Load unavailable fields
+            config = load_config("unavailable_fields")
+            AgentRegistry._unavailable_fields = config.get("unavailable_fields", [])
+            
+            logger.info(f"Loaded shared configs: {len(AgentRegistry._available_fields)} available fields, "
+                       f"{len(AgentRegistry._field_instructions)} instructions, "
+                       f"{len(AgentRegistry._unavailable_fields)} unavailable fields")
+        except Exception as e:
+            logger.error(f"Failed to initialize shared configs: {e}")
+            # Set defaults
+            AgentRegistry._field_mappings = {}
+            AgentRegistry._available_fields = []
+            AgentRegistry._field_instructions = {}
+            AgentRegistry._field_categories = {"categories": {}, "field_to_category": {}}
+            AgentRegistry._unavailable_fields = []
+    
+    @classmethod
+    def get_field_mappings(cls) -> Dict[str, str]:
+        """Get shared field mappings."""
+        return cls._field_mappings or {}
+    
+    @classmethod
+    def get_available_fields(cls) -> List[str]:
+        """Get shared available fields list."""
+        return cls._available_fields or []
+    
+    @classmethod
+    def get_field_instructions(cls) -> Dict[str, str]:
+        """Get shared field instructions."""
+        return cls._field_instructions or {}
+    
+    @classmethod
+    def get_field_categories(cls) -> Dict[str, Any]:
+        """Get shared field categories."""
+        return cls._field_categories or {"categories": {}, "field_to_category": {}}
+    
+    @classmethod
+    def get_unavailable_fields(cls) -> List[str]:
+        """Get shared unavailable fields list."""
+        return cls._unavailable_fields or []
+    
+    @classmethod
+    def get_ai_agent(cls, agent_type: AgentType, create_if_missing: bool = True) -> Optional[Agent]:
+        """Get or create an AI agent instance.
+        
+        Args:
+            agent_type: Type of agent to get
+            create_if_missing: Whether to create the agent if it doesn't exist
+            
+        Returns:
+            The AI agent instance or None
+        """
+        if agent_type not in cls._ai_agents and create_if_missing:
+            cls._create_ai_agent(agent_type)
+        return cls._ai_agents.get(agent_type)
+    
+    @classmethod
+    def _create_ai_agent(cls, agent_type: AgentType) -> None:
+        """Create an AI agent instance for the given type."""
+        from app.core.config import get_settings
+        settings = get_settings()
+        
+        logger.info(f"Creating AI agent instance for {agent_type.value}")
+        
+        try:
+            if agent_type == AgentType.FIELD_EXTRACTION:
+                from .field_extraction.prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
+                from .field_extraction.guidelines import GUIDELINES
+                from .field_extraction.models import FieldExtractionResponse
+                
+                cls._ai_agents[agent_type] = Agent(
+                    model=settings.GEMINI_MODEL,
+                    result_type=FieldExtractionResponse,
+                    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
+                )
+                
+            elif agent_type == AgentType.INSTRUCTION_PROCESSING:
+                from .instruction_processing.prompts import SYSTEM_PROMPT
+                from .instruction_processing.guidelines import GUIDELINES
+                from .instruction_processing.models import InstructionProcessingResponse
+                
+                cls._ai_agents[agent_type] = Agent(
+                    model=settings.GEMINI_MODEL,
+                    result_type=InstructionProcessingResponse,
+                    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
+                )
+                
+            elif agent_type == AgentType.SORTING_EXTRACTION:
+                from .sorting_extraction.prompts import SYSTEM_PROMPT
+                from .sorting_extraction.guidelines import GUIDELINES
+                from .sorting_extraction.models import SortingIntentResponse
+                
+                cls._ai_agents[agent_type] = Agent(
+                    model=settings.GEMINI_MODEL,
+                    result_type=SortingIntentResponse,
+                    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
+                )
+                
+            elif agent_type == AgentType.SYNTHESIS:
+                from .synthesis.prompts import SYSTEM_PROMPT
+                from .synthesis.guidelines import GUIDELINES
+                from .synthesis.models import SynthesisResponse
+                from app.core.constants import US_EXCHANGES
+                
+                cls._ai_agents[agent_type] = Agent(
+                    model=settings.GEMINI_MODEL,
+                    result_type=SynthesisResponse,
+                    system_prompt=SYSTEM_PROMPT.format(
+                        guidelines=GUIDELINES,
+                        us_exchanges=', '.join(US_EXCHANGES)
+                    )
+                )
+                
+            elif agent_type == AgentType.QUERY_GENERATION:
+                from .query_generation.prompts import SYSTEM_PROMPT
+                from .query_generation.guidelines import GUIDELINES
+                from .query_generation.models import QueryGenerationResponse
+                
+                cls._ai_agents[agent_type] = Agent(
+                    model=settings.GEMINI_MODEL,
+                    result_type=QueryGenerationResponse,
+                    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
+                )
+                
+            logger.info(f"Successfully created AI agent for {agent_type.value}")
+            
+        except Exception as e:
+            logger.error(f"Failed to create AI agent for {agent_type.value}: {e}")
 
 
 # Create singleton instance

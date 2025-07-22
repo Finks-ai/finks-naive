@@ -86,15 +86,40 @@ lambda_policy_attachment = aws.iam.RolePolicyAttachment(
     policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 )
 
-# Create Lambda function
+# Stack-specific Lambda configuration
+lambda_config = {
+    "dev": {
+        "memory_size": 256,  # Reduced based on logs showing only 128MB used
+        "timeout": 60,  # Increased to handle init timeout
+        "reserved_concurrent": 0,  # No reserved for dev
+        "provisioned_concurrent": 0  # No provisioned for dev
+    },
+    "staging": {
+        "memory_size": 512,
+        "timeout": 60,
+        "reserved_concurrent": 2,
+        "provisioned_concurrent": 0
+    },
+    "prod": {
+        "memory_size": 1024,  # As per deployment_config.yaml
+        "timeout": 30,
+        "reserved_concurrent": 10,  # As per deployment_config.yaml
+        "provisioned_concurrent": 2  # Keep 2 warm instances
+    }
+}
+
+current_config = lambda_config.get(environment, lambda_config["dev"])
+
+# Create Lambda function with optimized settings
 lambda_function = aws.lambda_.Function(
     f"{project_name}-lambda",
     package_type="Image",
     image_uri=image.image_uri,
     role=lambda_role.arn,
-    architectures=["arm64"],  # ARM architecture
-    timeout=600,  # 30 second timeout
-    memory_size=512,  # 512MB memory
+    architectures=["arm64"],  
+    timeout=current_config["timeout"],
+    memory_size=current_config["memory_size"],
+    reserved_concurrent_executions=current_config["reserved_concurrent"] if current_config["reserved_concurrent"] > 0 else None,
     environment={
         "variables": {
             "ENVIRONMENT": environment,
@@ -102,6 +127,20 @@ lambda_function = aws.lambda_.Function(
             "MONGODB_DB_NAME": env_vars.get("MONGODB_DB_NAME", ""),
             "GEMINI_API_KEY": env_vars.get("GEMINI_API_KEY", ""),
             "OPENAI_API_KEY": env_vars.get("OPENAI_API_KEY", ""),
+            # MongoDB optimization settings
+            "MONGODB_MAX_POOL_SIZE": "1",
+            "MONGODB_MIN_POOL_SIZE": "0",
+            "MONGODB_MAX_IDLE_TIME_MS": "45000",
+            "MONGODB_SERVER_SELECTION_TIMEOUT_MS": "5000",
+            # Cache settings
+            "CACHE_TTL_SECONDS": "3600",
+            "CACHE_MAX_MEMORY_ITEMS": "1000",
+            # Performance settings
+            "PARALLEL_EXECUTION_ENABLED": "true",
+            "MAX_CONCURRENT_AGENTS": "5",
+            # Lambda optimization flags
+            "LAZY_LOAD_MODELS": "true",
+            "PRELOAD_CACHE": "false" if environment == "dev" else "true"
         }
     },
     tags={
@@ -126,10 +165,89 @@ function_url = aws.lambda_.FunctionUrl(
 )
 
 # Create CloudWatch Log Group for Lambda
+log_retention = {
+    "dev": 3,
+    "staging": 7,
+    "prod": 14
+}
+
 log_group = aws.cloudwatch.LogGroup(
     f"{project_name}-log-group",
     name=pulumi.Output.concat("/aws/lambda/", lambda_function.name),
-    retention_in_days=14,
+    retention_in_days=log_retention.get(environment, 7),
+    tags={
+        "Project": "finks-naive",
+        "Environment": environment
+    }
+)
+
+# Add provisioned concurrency for production
+if environment == "prod" and current_config["provisioned_concurrent"] > 0:
+    provisioned_concurrency = aws.lambda_.ProvisionedConcurrencyConfig(
+        f"{project_name}-provisioned-concurrency",
+        function_name=lambda_function.name,
+        provisioned_concurrent_executions=current_config["provisioned_concurrent"],
+        qualifier=lambda_function.version
+    )
+
+# CloudWatch Alarms
+# High error rate alarm
+error_alarm = aws.cloudwatch.MetricAlarm(
+    f"{project_name}-error-alarm",
+    name=f"{project_name}-high-error-rate",
+    comparison_operator="GreaterThanThreshold",
+    evaluation_periods=2,
+    metric_name="Errors",
+    namespace="AWS/Lambda",
+    period=300,
+    statistic="Sum",
+    threshold=10,
+    alarm_description="Lambda function error rate is too high",
+    dimensions={
+        "FunctionName": lambda_function.name
+    },
+    tags={
+        "Project": "finks-naive",
+        "Environment": environment
+    }
+)
+
+# Slow initialization alarm
+init_alarm = aws.cloudwatch.MetricAlarm(
+    f"{project_name}-init-alarm",
+    name=f"{project_name}-slow-init",
+    comparison_operator="GreaterThanThreshold",
+    evaluation_periods=1,
+    metric_name="InitDuration",
+    namespace="AWS/Lambda",
+    period=300,
+    statistic="Maximum",
+    threshold=5000,  # 5 seconds
+    alarm_description="Lambda initialization is taking too long",
+    dimensions={
+        "FunctionName": lambda_function.name
+    },
+    tags={
+        "Project": "finks-naive",
+        "Environment": environment
+    }
+)
+
+# Duration alarm for timeouts
+duration_alarm = aws.cloudwatch.MetricAlarm(
+    f"{project_name}-duration-alarm",
+    name=f"{project_name}-slow-queries",
+    comparison_operator="GreaterThanThreshold",
+    evaluation_periods=3,
+    metric_name="Duration",
+    namespace="AWS/Lambda",
+    period=300,
+    statistic="Average",
+    threshold=10000,  # 10 seconds
+    alarm_description="Query processing is taking too long",
+    dimensions={
+        "FunctionName": lambda_function.name
+    },
     tags={
         "Project": "finks-naive",
         "Environment": environment
@@ -143,3 +261,20 @@ pulumi.export("lambda_function_arn", lambda_function.arn)
 pulumi.export("function_url", function_url.function_url)
 pulumi.export("function_url_endpoint", pulumi.Output.concat(function_url.function_url, "docs"))
 pulumi.export("cloudwatch_log_group", log_group.name)
+pulumi.export("lambda_memory_size", current_config["memory_size"])
+pulumi.export("lambda_timeout", current_config["timeout"])
+pulumi.export("environment", environment)
+
+# Export alarm names
+pulumi.export("error_alarm", error_alarm.name)
+pulumi.export("init_alarm", init_alarm.name)
+pulumi.export("duration_alarm", duration_alarm.name)
+
+# Export configuration summary
+pulumi.export("config_summary", {
+    "memory_mb": current_config["memory_size"],
+    "timeout_seconds": current_config["timeout"],
+    "reserved_concurrent": current_config["reserved_concurrent"],
+    "provisioned_concurrent": current_config["provisioned_concurrent"],
+    "log_retention_days": log_retention.get(environment, 7)
+})

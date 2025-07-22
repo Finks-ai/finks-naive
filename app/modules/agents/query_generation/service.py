@@ -3,29 +3,22 @@ Query Generation Service - Converts unified interpretation into MongoDB queries.
 """
 
 from typing import Dict, Any, List
-from pydantic_ai import Agent
 from app.core.constants import US_EXCHANGES, US_EXCHANGE_FILTER
-from app.core.config import get_settings
 from app.core.retry import retry_on_ai_errors
 from loguru import logger
 import json
 import re
 from .models import QueryGenerationRequest, QueryGenerationResponse, FieldPriority
-from .prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE, REFINEMENT_PROMPT_TEMPLATE
-from .guidelines import GUIDELINES
-
-settings = get_settings()
-
-# Initialize the query generation agent
-query_generation_agent = Agent(
-    model=settings.GEMINI_MODEL,
-    result_type=QueryGenerationResponse,
-    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
-)
+from .prompts import USER_PROMPT_TEMPLATE, REFINEMENT_PROMPT_TEMPLATE
+from ..registry import agent_registry, AgentType
 
 
 class QueryGenerationService:
     """Service for generating MongoDB queries from unified interpretations."""
+    
+    def __init__(self):
+        # Get or create the AI agent
+        self.query_generation_agent = agent_registry.get_ai_agent(AgentType.QUERY_GENERATION)
     
     def _ensure_exchange_filter(self, mongodb_query: Dict[str, Any], request: QueryGenerationRequest) -> Dict[str, Any]:
         """Ensure US exchange filter is applied if no exchange filter exists."""
@@ -88,7 +81,7 @@ class QueryGenerationService:
         )
         
         # Run the agent
-        result = await query_generation_agent.run(prompt)
+        result = await self.query_generation_agent.run(prompt)
         
         # Parse the query if it's a string
         mongodb_query = result.data.mongodb_query
@@ -172,7 +165,7 @@ class QueryGenerationService:
         )
         
         # Run the query generation agent with refinement context
-        result = await query_generation_agent.run(prompt)
+        result = await self.query_generation_agent.run(prompt)
         
         # Parse the query if it's a string
         mongodb_query = result.data.mongodb_query

@@ -3,29 +3,19 @@ Synthesis Service - Combines field interpretations and resolves conflicts.
 """
 
 from typing import Dict, List
-from pydantic_ai import Agent
 from app.core.constants import US_EXCHANGES
-from app.core.config import get_settings
 from app.core.retry import retry_on_ai_errors
 from .models import SynthesisRequest, SynthesisResponse, FieldInterpretation, FieldPriority
-from .prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE, REFINEMENT_PROMPT_TEMPLATE
-from .guidelines import GUIDELINES
-
-settings = get_settings()
-
-# Initialize the synthesis agent
-synthesis_agent = Agent(
-    model=settings.GEMINI_MODEL,
-    result_type=SynthesisResponse,
-    system_prompt=SYSTEM_PROMPT.format(
-        guidelines=GUIDELINES,
-        us_exchanges=', '.join(US_EXCHANGES)
-    )
-)
+from .prompts import USER_PROMPT_TEMPLATE, REFINEMENT_PROMPT_TEMPLATE
+from ..registry import agent_registry, AgentType
 
 
 class SynthesisService:
     """Service for synthesizing field interpretations into unified query strategy."""
+    
+    def __init__(self):
+        # Get or create the AI agent
+        self.synthesis_agent = agent_registry.get_ai_agent(AgentType.SYNTHESIS)
     
     @retry_on_ai_errors(max_retries=3)
     async def synthesize_interpretations(self, request: SynthesisRequest) -> SynthesisResponse:
@@ -39,7 +29,7 @@ class SynthesisService:
         )
         
         # Run the agent
-        result = await synthesis_agent.run(prompt)
+        result = await self.synthesis_agent.run(prompt)
         
         return SynthesisResponse(
             unified_interpretation=result.data.unified_interpretation,
@@ -108,7 +98,7 @@ class SynthesisService:
         )
         
         # Run the synthesis agent with refinement context
-        result = await synthesis_agent.run(prompt)
+        result = await self.synthesis_agent.run(prompt)
         
         # Combine previous and new field priorities
         previous_priorities_dict = self._convert_priorities_to_dict(previous_context.field_priorities)

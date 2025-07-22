@@ -3,63 +3,22 @@ Field Extraction Agent Service - Identifies relevant database fields from natura
 """
 
 from typing import List, Dict, Any
-from pathlib import Path
-from pydantic_ai import Agent
-from app.core.config import get_settings
-from app.core.config_loader import load_config
 from app.core.retry import retry_on_ai_errors
 from .models import FieldExtractionRequest, FieldExtractionResponse
-from .prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
-from .guidelines import GUIDELINES
-
-settings = get_settings()
-
-# Initialize the field extraction agent
-field_extraction_agent = Agent(
-    model=settings.GEMINI_MODEL,
-    result_type=FieldExtractionResponse,
-    system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
-)
+from .prompts import USER_PROMPT_TEMPLATE
+from ..registry import agent_registry, AgentType
 
 
 class FieldExtractionService:
     """Service for extracting relevant fields from natural language queries."""
     
     def __init__(self):
-        self.available_fields = self._load_available_fields()
-        self.unavailable_fields = self._load_unavailable_fields()
-        self.field_categories = self._load_field_categories()
-    
-    def _load_available_fields(self) -> List[str]:
-        """Load available fields from configuration."""
-        try:
-            config = load_config("field_mappings")
-            return list(config["field_mappings"].keys())
-        except FileNotFoundError:
-            # Fallback to basic fields if config not found
-            return [
-                "ttm_price_to_earnings_ratio",
-                "ttm_price_to_book_ratio", 
-                "market_capitalization",
-                "company_sector",
-                "ttm_dividend_yield",
-                "ttm_return_on_equity"
-            ]
-    
-    def _load_unavailable_fields(self) -> List[str]:
-        """Load unavailable fields that should be filtered out."""
-        try:
-            config = load_config("unavailable_fields")
-            return config.get("unavailable_fields", [])
-        except FileNotFoundError:
-            return []
-    
-    def _load_field_categories(self) -> Dict[str, Any]:
-        """Load field categories and their selection types."""
-        try:
-            return load_config("field_categories")
-        except FileNotFoundError:
-            return {"categories": {}, "field_to_category": {}}
+        # Get shared configurations from registry
+        self.available_fields = agent_registry.get_available_fields()
+        self.unavailable_fields = agent_registry.get_unavailable_fields()
+        self.field_categories = agent_registry.get_field_categories()
+        # Get or create the AI agent
+        self.ai_agent = agent_registry.get_ai_agent(AgentType.FIELD_EXTRACTION)
     
     def _get_category_info(self, field: str) -> Dict[str, Any]:
         """Get category information for a field."""
@@ -123,7 +82,7 @@ class FieldExtractionService:
         )
         
         # Run the agent
-        result = await field_extraction_agent.run(prompt)
+        result = await self.ai_agent.run(prompt)
         
         # Validate that returned fields exist in available fields
         # and are not in unavailable fields

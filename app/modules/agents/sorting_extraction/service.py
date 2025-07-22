@@ -3,39 +3,24 @@ Sorting Extraction Service - Identifies sorting requirements from natural langua
 """
 
 from typing import Dict, List, Optional
-from pydantic_ai import Agent
-from app.core.config import get_settings
 from app.core.retry import retry_on_ai_errors
 from loguru import logger
 import json
 from .models import SortingIntent
-from .prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
-from .guidelines import GUIDELINES, DEFAULT_FIELD_MAPPINGS
-
-settings = get_settings()
+from .prompts import USER_PROMPT_TEMPLATE
+from .guidelines import DEFAULT_FIELD_MAPPINGS
+from ..registry import agent_registry, AgentType
 
 
 class SortingExtractionService:
     """Service for extracting sorting requirements from queries."""
     
     def __init__(self):
-        self.agent = Agent(
-            settings.GEMINI_MODEL,
-            result_type=SortingIntent,
-            system_prompt=SYSTEM_PROMPT.format(guidelines=GUIDELINES)
-        )
+        # Get or create the AI agent
+        self.agent = agent_registry.get_ai_agent(AgentType.SORTING_EXTRACTION)
         
-        # Load field mappings for better field identification
-        self.field_mappings = self._load_field_mappings()
-    
-    def _load_field_mappings(self) -> Dict[str, str]:
-        """Load field mappings for common sorting terms."""
-        try:
-            # Use default mappings from guidelines
-            return DEFAULT_FIELD_MAPPINGS
-        except Exception as e:
-            logger.warning(f"Could not load field mappings: {e}")
-            return {}
+        # Use default field mappings for sorting
+        self.field_mappings = DEFAULT_FIELD_MAPPINGS
     
     @retry_on_ai_errors(max_retries=3)
     async def extract_sorting_intent(self, query: str) -> SortingIntent:
