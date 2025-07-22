@@ -1,0 +1,47 @@
+# Field to MongoDB collection mappings
+# This file defines which collection contains each field
+# Auto-generated from field_mappings.json
+
+field_mappings:
+  # Fields from master_ttm_key_metrics_ratios
+  ttm_debt_to_equity_ratio: master_ttm_key_metrics_ratios
+  ttm_dividend_yield: master_ttm_key_metrics_ratios
+  ttm_ebit_margin: master_ttm_key_metrics_ratios
+  ttm_ebitda_margin: master_ttm_key_metrics_ratios
+  ttm_ev_to_ebitda: master_ttm_key_metrics_ratios
+  ttm_ev_to_sales: master_ttm_key_metrics_ratios
+  ttm_free_cash_flow_yield: master_ttm_key_metrics_ratios
+  ttm_gross_profit_margin: master_ttm_key_metrics_ratios
+  ttm_interest_coverage_ratio: master_ttm_key_metrics_ratios
+  ttm_net_profit_margin: master_ttm_key_metrics_ratios
+  ttm_operating_profit_margin: master_ttm_key_metrics_ratios
+  ttm_price_to_book_ratio: master_ttm_key_metrics_ratios
+  ttm_price_to_earnings_ratio: master_ttm_key_metrics_ratios
+  ttm_price_to_free_cash_flow_ratio: master_ttm_key_metrics_ratios
+  ttm_price_to_sales_ratio: master_ttm_key_metrics_ratios
+  ttm_return_on_assets: master_ttm_key_metrics_ratios
+  ttm_return_on_equity: master_ttm_key_metrics_ratios
+  ttm_return_on_invested_capital: master_ttm_key_metrics_ratios
+  ttm_solvency_ratio: master_ttm_key_metrics_ratios
+
+  # Fields from master_analyst_ratings_consensus
+  average_consensus_analyst_ratings: master_analyst_ratings_consensus
+
+  # Fields from master_profiles
+  average_volume: master_profiles
+  beta: master_profiles
+  company_country: master_profiles
+  company_sector: master_profiles
+  exchange_acronym: master_profiles
+  market_capitalization: master_profiles
+
+# Collection descriptions for reference
+collection_descriptions:
+  master_ttm_key_metrics_ratios: |
+    TTM (Trailing Twelve Months) financial ratios and key metrics
+
+  master_analyst_ratings_consensus: |
+    Analyst ratings and consensus data
+
+  master_profiles: |
+    Core company information and basic metrics

@@ -1,0 +1,37 @@
+[project]
+name = "finks-naive"
+version = "0.1.0"
+description = "Natural language to MongoDB query converter using multi-agent AI"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[all]>=0.115.5",
+    "uvicorn>=0.22.0",
+    "pymongo>=4.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "pydantic-ai>=0.0.14",
+    "python-dotenv>=1.0.0",
+    "mangum>=0.19.0",
+    "loguru>=0.7.2",
+    "httpx>=0.24.1",
+    "typing-extensions>=4.11.0",
+    "pulumi>=3.183.0",
+    "pulumi-aws>=6.83.0",
+    "pulumi-awsx>=2.22.0",
+    "tqdm>=4.65.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4.0", "pytest-asyncio>=0.21.0", "pytest-cov>=4.1.0"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["app"]
+
+[tool.setuptools]
+packages = ["app"]

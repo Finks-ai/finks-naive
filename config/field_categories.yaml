@@ -1,0 +1,116 @@
+# Field categorization for agent processing
+# Defines selection rules and groupings
+
+categories:
+  Valuation:
+    type: single  # User can select only one field
+    fields:
+      - ttm_price_to_free_cash_flow_ratio
+      - ttm_price_to_book_ratio
+      - ttm_price_to_sales_ratio
+      - ttm_price_to_earnings_ratio
+      - ttm_ev_to_ebitda
+      - ttm_ev_to_sales
+
+  Returns:
+    type: single  # User can select only one field
+    fields:
+      - price_change_10year_percentage
+      - price_change_5year_percentage
+      - price_change_3year_percentage
+      - price_change_1year_percentage
+      - price_change_yeartodate_percentage
+      - price_change_6month_percentage
+      - price_change_1month_percentage
+      - price_change_5day_percentage
+
+  Profitability:
+    type: single  # User can select only one field
+    fields:
+      - ttm_net_profit_margin
+      - ttm_operating_profit_margin
+      - ttm_ebit_margin
+      - ttm_gross_profit_margin
+      - ttm_return_on_assets
+      - ttm_ebitda_margin
+      - ttm_return_on_equity
+
+  Overview:
+    type: multiselect  # User can select multiple fields
+    fields:
+      - is_ticker_in_sp500
+      - is_ticker_in_dow
+      - is_ticker_in_nasdaq
+      - average_consensus_analyst_ratings
+      - exchange_acronym
+      - beta
+      - company_sector
+      - company_country
+      - ttm_dividend_yield
+      - average_volume
+      - market_capitalization
+
+  Quality:
+    type: single  # User can select only one field
+    fields:
+      - ttm_interest_coverage_ratio
+      - ttm_solvency_ratio
+      - ttm_debt_to_equity_ratio
+      - ttm_free_cash_flow_yield
+      - ttm_return_on_invested_capital
+
+  Growth:
+    type: single  # User can select only one field
+    fields:
+      - year_over_year_quarterly_eps_growth
+      - year_over_year_quarterly_revenue_growth
+      - 5year_annual_total_EPS_growth
+      - 1year_annual_EPS_growth
+      - 5year_annual_total_revenue_growth
+      - 1year_annual_revenue_growth
+
+# Reverse mapping for quick field lookups
+field_to_category:
+  1year_annual_EPS_growth: Growth
+  1year_annual_revenue_growth: Growth
+  5year_annual_total_EPS_growth: Growth
+  5year_annual_total_revenue_growth: Growth
+  average_consensus_analyst_ratings: Overview
+  average_volume: Overview
+  beta: Overview
+  company_country: Overview
+  company_sector: Overview
+  exchange_acronym: Overview
+  is_ticker_in_dow: Overview
+  is_ticker_in_nasdaq: Overview
+  is_ticker_in_sp500: Overview
+  market_capitalization: Overview
+  price_change_10year_percentage: Returns
+  price_change_1month_percentage: Returns
+  price_change_1year_percentage: Returns
+  price_change_3year_percentage: Returns
+  price_change_5day_percentage: Returns
+  price_change_5year_percentage: Returns
+  price_change_6month_percentage: Returns
+  price_change_yeartodate_percentage: Returns
+  ttm_debt_to_equity_ratio: Quality
+  ttm_dividend_yield: Overview
+  ttm_ebit_margin: Profitability
+  ttm_ebitda_margin: Profitability
+  ttm_ev_to_ebitda: Valuation
+  ttm_ev_to_sales: Valuation
+  ttm_free_cash_flow_yield: Quality
+  ttm_gross_profit_margin: Profitability
+  ttm_interest_coverage_ratio: Quality
+  ttm_net_profit_margin: Profitability
+  ttm_operating_profit_margin: Profitability
+  ttm_price_to_book_ratio: Valuation
+  ttm_price_to_earnings_ratio: Valuation
+  ttm_price_to_free_cash_flow_ratio: Valuation
+  ttm_price_to_sales_ratio: Valuation
+  ttm_return_on_assets: Profitability
+  ttm_return_on_equity: Profitability
+  ttm_return_on_invested_capital: Quality
+  ttm_solvency_ratio: Quality
+  year_over_year_quarterly_eps_growth: Growth
+  year_over_year_quarterly_revenue_growth: Growth

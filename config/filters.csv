@@ -1,0 +1,352 @@
+FE Label,db_table,Category,Type,FE Dropdown Options,Enable Manual Input,Default,"Input Type ",Instructions For LLM
+P/FCF Ratio,ttm_price_to_free_cash_flow_ratio (https://www.notion.so/ttm_price_to_free_cash_flow_ratio-1c87e027d006805fa63ac3113d0c7441?pvs=21),Valuation,float,"• Under 30
+• Under 20
+• Under 10
+• Under 5
+• Positive",true,n/a,numeric_input,"Lower values imply more attractive (cheaper) valuation
+
+- If user requests **“undervalued”, “cheap”,** or **“value”**, pick the lowest threshold available (e.g., **“Under 5”** or **“Under 10”**).
+- If user requests **“fair value”** or gives no valuation preference, choose a mid-range threshold (e.g., **“Under 20”**).
+- If user requests **“high-valuation”** or **“over-valued”**, set the filter to **“> 20”**"
+P/B Ratio,ttm_price_to_book_ratio (https://www.notion.so/ttm_price_to_book_ratio-1c87e027d006802692d5d7c23b10b895?pvs=21),Valuation,float,"• Under 20
+• Under 10
+• Under 5
+• Under 1",true,n/a,numeric_input,"P/B Ratio
+Shows how much investors pay for each dollar of book value (assets – liabilities); lower values often highlight balance-sheet bargains.
+• If user requests ‘undervalued’, ‘cheap’, or ‘value’, set the filter to Under 1.
+• If user requests ‘fair value’, apply > 2 and < 3 in the same filter.
+• If user requests ‘high-valuation’ or ‘over-valued’, set the filter to > 10."
+P/S Ratio,ttm_price_to_sales_ratio (https://www.notion.so/ttm_price_to_sales_ratio-1c87e027d0068022a896e35b8ac40b6f?pvs=21),Valuation,float,"• Under 20
+• Under 10
+• Under 5
+• Under 1",true,n/a,numeric_input,"P/S Ratio
+Indicates how much the market pays for each dollar of revenue; low readings can flag inexpensive sales multiples.
+• If user requests ‘undervalued’, ‘cheap’, or ‘value’, set the filter to Under 1.
+• If user requests ‘fair value’, apply > 2 and < 4 in the same filter.
+• If user requests ‘high-valuation’ or ‘over-valued’, set the filter to > 10."
+P/E Ratio,ttm_price_to_earnings_ratio (https://www.notion.so/ttm_price_to_earnings_ratio-1c87e027d00680b58be5c62b866424c4?pvs=21),Valuation,float,"• Under 30
+• Under 20
+• Under 10
+• Under 5
+• Positive",true,n/a,numeric_input,"P/E Ratio
+Measures price relative to earnings; a classic valuation gauge where lower numbers suggest a cheaper profit multiple.
+• If user requests ‘undervalued’, ‘cheap’, or ‘value’, set the filter to Under 10.
+• If user requests ‘fair value’, apply > 15 and < 20 in the same filter.
+• If user requests ‘high-valuation’ or ‘over-valued’, set the filter to > 20."
+EV/EBITDA,ttm_ev_to_ebitda (https://www.notion.so/ttm_ev_to_ebitda-1c87e027d006804eae06ca3d8a0c012a?pvs=21),Valuation,float,"• Under 30
+• Under 20
+• Under 10
+• Under 5
+• Positive",true,n/a,numeric_input,"EV/EBITDA
+Compares enterprise value to operating cash earnings; useful across different capital structures—lower may signal bargain pricing.
+• If user requests ‘undervalued’, ‘cheap’, or ‘value’, set the filter to Under 5.
+• If user requests ‘fair value’, apply > 8 and < 12 in the same filter.
+• If user requests ‘high-valuation’ or ‘over-valued’, set the filter to > 20."
+EV/Sales,ttm_ev_to_sales (https://www.notion.so/ttm_ev_to_sales-1c87e027d00680a3acc9d2e564fbe0b7?pvs=21),Valuation,float,"• Under 20
+• Under 10
+• Under 5
+• Under 1",true,n/a,numeric_input,"EV/Sales Ratio
+Expresses a company’s total valuation (enterprise value) relative to its annual revenue; lower multiples mean investors are paying less for each dollar of sales.
+• If user requests ‘undervalued’, ‘cheap’, or ‘value’, set the filter to Under 2 (captures the lowest threshold available).
+• If user requests ‘fair value’ (or gives no valuation preference), apply > 3 and < 6 together in the same filter (targets a moderate, mid-range multiple).
+• If user requests ‘high-valuation’ or ‘over-valued’, set the filter to > 20 (identifies stocks trading at very rich sales multiples)."
+10Y Price Return,price_change_10year_percentage  (https://www.notion.so/price_change_10year_percentage-1c97e027d0068045ab7cf10c867583d3?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"10-Year Price Return
+Very long-term trend, capturing one full market decade.
+• “Decade-long winners”, “structural outperformers” → Large Gain > 500 %.
+• Positive (no magnitude) → Positive > 0 %.
+• “Decade-long underperformers” → Negative < 0 %.
+• “Major decade-long decline” → Large Loss < -80 %."
+5Y Price Return,price_change_5year_percentage  (https://www.notion.so/price_change_5year_percentage-1c97e027d0068066b7ececc3cd8dc833?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"5-Year Price Return
+Shows sustained performance over a typical investment cycle.
+• “Five-year compound winners”, “secular strength” → Large Gain > 250 %.
+• Positive wording → Positive > 0 %.
+• “Five-year laggards”, “long-term losers” → Negative < 0 %.
+• “Severe long-term drop” → Large Loss < -70 %."
+3Y Price Return,price_change_3year_percentage  (https://www.notion.so/price_change_3year_percentage-1c97e027d0068060a7ddc30985944e77?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"3-Year Price Return
+Multi-year trend that smooths out short-term noise.
+• “Multi-year winners”, “long-term outperformers” → Large Gain > 100 %.
+• Generic positive → Positive > 0 %.
+• “Underperforming the last few years” → Negative < 0 %.
+• “Significant long-term decline” → Large Loss < -60 %."
+1Y Price Return,price_change_1year_percentage  (https://www.notion.so/price_change_1year_percentage-1c97e027d0068010a095c34496a8a57c?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 40%
+• Large Loss: < -40%",true,n/a,numeric_input,"1-Year Price Return
+• “12-month winners”, “strong annual performance” → Large Gain > 40 %.
+• Positive (no magnitude) → Positive > 0 %.
+• “Annual underperformers”, “losers over the last year” → Negative < 0 %.
+• “Big annual drop” → Large Loss < -40 %."
+YTD Price Return,price_change_yeartodate_percentage  (https://www.notion.so/price_change_yeartodate_percentage-1c97e027d0068058b452fbee8a6d6ccf?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"YTD Price Return
+Performance from January 1 to today; useful for calendar-year context.
+• “Year-to-date winners”, “market leaders this year” → Large Gain > 20 %.
+• Positive YTD with no strength cue → Positive > 0 %.
+• “YTD laggards”, “this year’s losers” → Negative < 0 %.
+• “Heavy YTD sell-off” → Large Loss < -20 %."
+6M Price Return,price_change_6month_percentage  (https://www.notion.so/price_change_6month_percentage-1c97e027d00680709e24d56cbf86a01d?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"6-Month Price Return
+Shows medium-term trend over half a year.
+• “Strong momentum”, “six-month winner”, “mid-term strength” → Large Gain > 40 %.
+• Generic positive wording → Positive > 0 %.
+• “Underperformers”, “laggards”, “mid-term weakness” → Negative < 0 %.
+• “Deeply sold off”, “big drop” → Large Loss < -40 %."
+1M Price Return,price_change_1month_percentage  (https://www.notion.so/price_change_1month_percentage-1c97e027d0068050b43dee33e716d811?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 30%
+• Large Loss: < -30%",true,n/a,numeric_input,"1-Month Price Return
+Captures momentum over roughly 22 trading days (one calendar month).
+• “Recent winners”, “1-month strength”, “short-term rally” → Large Gain > 30 %.
+• “Positive momentum” (no magnitude) → Positive > 0 %.
+• “Losers”, “pullback”, “dip” → Negative < 0 %.
+• “Big monthly drop”, “oversold” → Large Loss < -30 %."
+5D Price Return,price_change_5day_percentage  (https://www.notion.so/price_change_5day_percentage-1c97e027d0068086868ffbd84c5bd65f?pvs=21),Returns,float,"• Positive: > 0%
+• Negative: < 0%
+• Large Gain: > 20%
+• Large Loss: < -20%",true,n/a,numeric_input,"5-Day Price Return
+Tracks very short-term momentum over the last week (≈5 trading days).
+• If user asks for “recent winners”, “short-term momentum”, “bullish breakout”, set Large Gain > 20 %.
+• If user asks for “positive momentum” without strength qualifiers, set Positive > 0 %.
+• If user asks for “recent losers”, “dip buy”, “pullback”, set Negative < 0 %.
+• If user wants “big sell-offs” or “oversold”, set Large Loss < -20 %."
+Net Profit Margin,ttm_net_profit_margin (https://www.notion.so/ttm_net_profit_margin-1c87e027d00680d5b006d2b2fdc2e3fc?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0%–10%
+• Moderate: 11%–25%
+• High: > 25%",true,n/a,numeric_input,"Net Profit Margin
+Percentage of revenue that ultimately becomes net income—captures overall profitability after all costs and taxes.
+• If the user asks for “high margin,” “very profitable,” or “efficient operators,” choose High > 25%.
+• If the user wants “solid” or “average” profitability (or gives no preference), choose Moderate 11–25%.
+• If the user mentions “thin margins” or “low profitability,” choose Low 0–10%.
+• For “unprofitable” or “loss-making” firms, choose Negative < 0%."
+Operating Profit Margin,ttm_operating_profit_margin (https://www.notion.so/ttm_operating_profit_margin-1c87e027d006800c937fe07d0de5643f?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0%–10%
+• Moderate: 11%–20%
+• High: > 20%",true,n/a,numeric_input,"Operating Profit Margin
+Operating income as a share of revenue—shows core operating efficiency before interest and taxes.
+• High > 20% for “strong operations” or “wide operating margin.”
+• Moderate 11–20% for “average” or unspecified.
+• Low 0–10% for “low margin.”
+• Negative < 0% for “operating losses.”"
+EBIT Margin,ttm_ebit_margin (https://www.notion.so/ttm_ebit_margin-1c87e027d006804693aee07e2ec77bdf?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0%–10%
+• Moderate: 11%–20%
+• High: > 20%",true,n/a,numeric_input,"EBIT Margin
+EBIT divided by revenue—similar to operating margin but after depreciation & amortization.
+• High > 20% when user requests “robust EBIT margin.”
+• Moderate 11–20% for neutral requests.
+• Low 0–10% for “low EBIT.”
+• Negative < 0% for loss situations."
+Gross Profit Margin,ttm_gross_profit_margin (https://www.notion.so/ttm_gross_profit_margin-1c87e027d00680fcaa6eeaad53b09c59?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0%–29%
+• Moderate: 30%–59%
+• High: > 60%",true,n/a,numeric_input,"Gross Profit Margin
+Revenue minus cost of goods sold, as a percentage of revenue—measures product-level pricing power.
+• High > 60% for “high gross margin” or “premium pricing.”
+• Moderate 30–59% for “steady” or no preference.
+• Low 0–29% for “commodity-like,” “low margin.”
+• Negative < 0% for firms selling below cost."
+Return on Assets,ttm_return_on_assets (https://www.notion.so/ttm_return_on_assets-1c87e027d0068078b960d4eeb3a0d55b?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0-10%
+• Moderate: 11–25%
+• High: > 25%",true,n/a,numeric_input,"Return on Assets (ROA)
+Net income relative to total assets—gauges how effectively the company turns assets into profit.
+• High > 25% for “asset-light, very efficient.”
+• Moderate 11–25% for “healthy” or no preference.
+• Low 0–10% for “low ROA.”
+• Negative < 0% for “asset-destroying” or loss-making."
+EBITDA Margin,ttm_ebitda_margin (https://www.notion.so/ttm_ebitda_margin-1c87e027d0068017a5dbeff46cfe61e5?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0%–15%
+• Moderate: 16%–30%
+• High: > 30%",true,n/a,numeric_input,"EBITDA Margin
+EBITDA divided by revenue—shows cash-operating profitability, independent of capital structure.
+• High > 30% for “strong cash margins.”
+• Moderate 16–30% for neutral requests.
+• Low 0–15% for “low cash margin.”
+• Negative < 0% for negative EBITDA."
+Return on Equity,ttm_return_on_equity (https://www.notion.so/ttm_return_on_equity-1c87e027d00680a99f25fb767bac0d5b?pvs=21),Profitability,float,"• Negative: < 0%
+• Low: 0-10%
+• Moderate: 11–25%
+• High: > 25%",true,n/a,numeric_input,"Return on Equity (ROE)
+Net income relative to shareholders’ equity—high values indicate attractive returns for owners.
+• High > 25% for “high ROE” or “shareholder-efficient.”
+• Moderate 11–25% for average.
+• Low 0–10% for “low ROE.”
+• Negative < 0% for negative equity returns."
+Index,"is_ticker_in_sp500 (https://www.notion.so/is_ticker_in_sp500-2237e027d006806fa59bf1857ba42660?pvs=21), is_ticker_in_dow (https://www.notion.so/is_ticker_in_dow-2237e027d00680b8b616dcca68e9b1be?pvs=21), is_ticker_in_nasdaq (https://www.notion.so/is_ticker_in_nasdaq-2237e027d00680a1b3acf3eafc4d6865?pvs=21)",Overview,"bool,bool,bool","• S&P 500
+• Nasdaq
+• Dow Jones",false,n/a,multi_select,"Index
+Filters membership in major U.S. indices.
+• Pick S&P 500 if the user says “S&P,” “large-cap benchmark,” or “broad market.”
+• Pick Nasdaq for “Nasdaq,” “tech-heavy,” or “growth index.”
+• Pick Dow Jones for “Dow,” “blue-chips,” or “industrial average.”"
+Consensus Analyst Rating,average_consensus_analyst_ratings (https://www.notion.so/average_consensus_analyst_ratings-2187e027d006800d8e3eec069e0aefe3?pvs=21),Overview,str,"• Buy
+• Hold
+• Sell",false,n/a,multi_select,"Consensus Analyst Rating
+Aggregated Wall-Street stance on the stock.
+• Buy for “bullish,” “analysts positive,” or “favorable rating.”
+• Hold for “neutral,” “wait-and-see,” or no opinion.
+• Sell for “bearish,” “analysts negative,” or “avoid.”"
+Exchange,exchange_acronym (https://www.notion.so/exchange_acronym-1c77e027d00680f28613e04af55f59ab?pvs=21),Overview,str,"[Dropdown of exchange options] ",false,n/a,multi_select,"Exchange
+Primary listing venue.
+• Map the user’s explicit mention (“NYSE,” “Nasdaq,” “TSX,” etc.) directly to the matching dropdown option.
+• If the user asks for “U.S.-listed,” default to NYSE plus Nasdaq (apply both filters if multiple selection is allowed)."
+Beta,beta (https://www.notion.so/beta-1c77e027d00680dca2f6c74d84d833fc?pvs=21),Overview,float,"• Low Volatility: Beta < 0.8
+• Market-Neutral: Beta 0.8 – 1.2
+• High Volatility: Beta > 1.2
+• Negative Beta: Beta < 0",true,n/a,numeric_input,"Beta
+Measures share-price volatility relative to the market (S&P 500).
+• Low < 0.8 for “defensive,” “low volatility,” or “stable.”
+• Market-Neutral 0.8–1.2 when no volatility preference is given.
+• High > 1.2 for “volatile,” “aggressive,” or “high-beta.”
+• Negative < 0 for “inverse correlation” or “market hedge.”"
+Sector,company_sector (https://www.notion.so/company_sector-1c77e027d00680699e1ce8cee4539917?pvs=21),Overview,str,[Dropdown of sector from dataset],false,n/a,multi_select,"Sector
+Economic industry grouping.
+• Match the user’s stated sector (“Technology,” “Healthcare,” etc.) to the identical dropdown value.
+• If the user says “diversified” or gives no sector, leave this filter unset."
+Country,company_country (https://www.notion.so/company_country-1c77e027d0068005a26cf33d7e6503cc?pvs=21),Overview,str,[Dropdown of countries from dataset],false,US,multi_select,"Country
+Headquarters or primary listing country.
+• Translate any country reference—full name, abbreviation, 3-letter code, or demonym—into its two-letter ISO 3166-1 alpha-2 code, and use that code as the filter value (e.g., “United States,” “USA,” “U.S.” → US; “Canada,” “CA” → CA; “Japan,” “JP” → JP).
+
+• If the user requests “domestic,” substitute the code that matches the user’s locale; otherwise leave this filter unset."
+Dividend Yield,ttm_dividend_yield (https://www.notion.so/ttm_dividend_yield-1c87e027d006800cb35bee0316580761?pvs=21),Overview,float,"• No Dividend: 0%
+• Paying Dividends: >0%
+• Moderate Yield: 2% – 4%
+• High Yielding: >5%",true,n/a,numeric_input,"Dividend Yield
+Annual dividends per share divided by price—shows income return.
+• High Yield > 5% for “high dividend,” “income,” or “yield play.”
+• Moderate 2–4% for “steady income” or no preference.
+• Paying Dividends > 0% for “any dividend.”
+• No Dividend 0% for “growth only” or “no dividend.”"
+Average Volume,average_volume (https://www.notion.so/average_volume-1c77e027d006807d918fed5941417c3c?pvs=21),Overview,float,"• Over 10M
+• Over 1M
+• Over 100K
+• Under 100K ",true,n/a,numeric_input,"Average Volume
+Average daily shares traded—liquidity proxy.
+• Over 10 M for “very liquid,” “institutional,” or “high volume.”
+• Over 1 M for “liquid” or no preference.
+• Over 100 K for “less liquid but tradable.”
+• Under 100 K for “illiquid,” “thinly traded,” or “micro-cap curiosity.”"
+Market Cap,market_capitalization (https://www.notion.so/market_capitalization-2077e027d00680cf8745de5a7b02eb70?pvs=21),Overview,float,"• Mega-Cap: 200B+
+• Large-Cap: 10–200B
+• Mid-Cap: 2–10B
+• Small-Cap: 300M–2B
+• Micro-Cap: Under 300M",true,n/a,numeric_input,"Market Cap
+Equity valuation band.
+• Mega-Cap ≥ $200 B for “mega,” “FAANG-size,” or “largest.”
+• Large-Cap $10–200 B for “large cap” or “established.”
+• Mid-Cap $2–10 B for “mid cap,” “SMID,” or neutral size.
+• Small-Cap $300 M–2 B for “small cap” or “emerging.”
+• Micro-Cap < $300 M for “micro cap,” “speculative,” or “tiny.”"
+Interest Coverage Ratio,ttm_interest_coverage_ratio (https://www.notion.so/ttm_interest_coverage_ratio-1c87e027d006805ba9f3c788cf7000a5?pvs=21),Quality,float,"
+• Exceptional: Over 10
+• Strong: 6 to 10
+• Moderate: 2 to 5
+• High Risk: Under 2",true,n/a,numeric_input,"Interest Coverage Ratio
+EBIT divided by interest expense—tests ability to service debt.
+• Exceptional > 10 for “zero default risk,” “excellent coverage.”
+• Strong 6–10 for “comfortably covers interest.”
+• Moderate 2–5 for neutral or average.
+• High Risk < 2 for “highly leveraged,” “debt issues,” or “distressed.”"
+Solvency Ratio,ttm_solvency_ratio (https://www.notion.so/ttm_solvency_ratio-1c87e027d006809780cdd360060ff28a?pvs=21),Quality,float,"• Strong: Over 60%
+• Healthy: 40% to 60%
+• Moderate: 20% to 40%
+• Risky: Under 20%",true,n/a,numeric_input,"Solvency Ratio
+Share of total assets financed by equity; higher = safer long-term solvency.
+• Strong > 60% for “conservative balance sheet,” “low leverage.”
+• Healthy 40–60% for average or no preference.
+• Moderate 20–40% for “leveraged but acceptable.”
+• Risky < 20% for “high leverage,” “risky.”"
+Debt to Equity Ratio,ttm_debt_to_equity_ratio (https://www.notion.so/ttm_debt_to_equity_ratio-1c87e027d006803482e3d118a77bf364?pvs=21),Quality,float,"• No Debt: 0
+• Low: 0-0.5
+• Moderate: 0.5-1.5
+• High: > 1.5",true,n/a,numeric_input,"Debt to Equity Ratio
+Total debt relative to shareholders’ equity.
+• No Debt 0 for “debt-free.”
+• Low 0–0.5 for “conservative leverage.”
+• Moderate 0.5–1.5 when no leverage preference.
+• High > 1.5 for “highly leveraged,” “aggressive capital structure.”"
+Free Cash Flow Yield,ttm_free_cash_flow_yield (https://www.notion.so/ttm_free_cash_flow_yield-1c87e027d00680c0b219ef3068f5d155?pvs=21),Quality,float,"• Positive: > 0%
+• Low: 0% – 4%
+• Moderate: 4% – 8%
+• High: > 8%",true,n/a,numeric_input,"Free Cash Flow Yield
+Free cash flow per share divided by price—income available to owners.
+• High > 8% for “cash cow,” “strong cash yield,” or “undervalued on cash.”
+• Moderate 4–8% for neutral/no preference.
+• Low 0–4% for “low yield” or growth focus.
+• Positive > 0% guarantees they at least generate cash;
+• Negative < 0% if the user explicitly wants “cash-burning” firms."
+Return on Invested Capital,ttm_return_on_invested_capital (https://www.notion.so/ttm_return_on_invested_capital-1c87e027d00680d5ad25c7b3dcfb643a?pvs=21),Quality,float,"• Low: < 5%
+• Moderate: 5–15%
+• High: 15–30%
+• Exceptional: > 30%",true,n/a,numeric_input,"Return on Invested Capital (ROIC)
+Profit generated per dollar of capital (debt+equity)—hallmark of economic moat.
+• Exceptional > 30% for “high ROIC,” “moat companies.”
+• High 15–30% for “strong returns.”
+• Moderate 5–15% for no preference.
+• Low < 5% for “low returns” or “capital-intensive.”"
+YoY Quarterly EPS Growth,year_over_year_quarterly_eps_growth (https://www.notion.so/year_over_year_quarterly_eps_growth-2237e027d006804e8abdeb085a2fa4ad?pvs=21),Growth,float,"• Large Gain: > 30%
+• Large Loss: < -30%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"YoY Quarterly EPS Growth
+Growth of EPS versus same quarter last year.
+• Large Gain > 30% for “explosive earnings growth.”
+• Positive > 0% for “growing earnings” or neutral.
+• Negative < 0% for “declining earnings.”
+• Large Loss < -30% for “massive EPS drop” or turnarounds."
+YoY Quarterly Revenue Growth,year_over_year_quarterly_revenue_growth (https://www.notion.so/year_over_year_quarterly_revenue_growth-2237e027d006806991a7de9913216391?pvs=21),Growth,float,"• Large Gain: > 30%
+• Large Loss: < -30%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"YoY Quarterly Revenue Growth
+Revenue growth versus same quarter last year.
+• Large Gain > 30% for “hyper-growth sales.”
+• Positive > 0% for “growing sales.”
+• Negative < 0% for “shrinking sales.”
+• Large Loss < -30% for “severe revenue decline.”"
+5Y Annual EPS Growth,5year_annual_total_EPS_growth (https://www.notion.so/5year_annual_total_EPS_growth-2237e027d00680a0ac10c1db4f748dea?pvs=21),Growth,float,"• Large Gain: > 100%
+• Large Loss: < -50%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"5Y Annual EPS Growth
+Compound EPS growth over five years—signals durable earnings trajectory.
+• Large Gain > 100% for “multi-bagger earnings.”
+• Positive > 0% for “steady long-term growth.”
+• Negative < 0% for “earnings erosion.”
+• Large Loss < -50% for “major decline.”"
+1Y Annual EPS Growth,1year_annual_EPS_growth (https://www.notion.so/1year_annual_EPS_growth-2237e027d00680d891e8d90078bb0f19?pvs=21),Growth,float,"• Large Gain: > 30%
+• Large Loss: < -30%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"1Y Annual EPS Growth
+EPS growth over the latest fiscal year.
+• Large Gain > 30% for “strong recent growth.”
+• Positive > 0% for modest growth.
+• Negative < 0% for shrinking EPS.
+• Large Loss < -30% for turnarounds."
+5Y Annual Revenue Growth,5year_annual_total_revenue_growth (https://www.notion.so/5year_annual_total_revenue_growth-2237e027d006800287e9ee6441c12eaa?pvs=21),Growth,float,"• Large Gain: > 100%
+• Large Loss: < -50%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"5Y Annual Revenue Growth
+Five-year compound sales growth—structural demand signal.
+• Large Gain > 100% for “explosive long-term sales growth.”
+• Positive > 0% for healthy trend.
+• Negative < 0% for declining business.
+• Large Loss < -50% for severe long-term contraction."
+1Y Annual Revenue Growth,1year_annual_revenue_growth (https://www.notion.so/1year_annual_revenue_growth-2237e027d006801dbb3ad5213f166858?pvs=21),Growth,float,"• Large Gain: > 30%
+• Large Loss: < -30%
+• Positive: > 0%
+• Negative: < 0%",true,n/a,numeric_input,"1Y Annual Revenue Growth
+Revenue growth in the most recent fiscal year.
+• Large Gain > 30% for “rapid recent sales growth.”
+• Positive > 0% for “growing.”
+• Negative < 0% for “shrinking.”
+• Large Loss < -30% for steep drop."

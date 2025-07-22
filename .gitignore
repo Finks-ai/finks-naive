@@ -1,0 +1,180 @@
+# =========================
+# Python
+# =========================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =========================
+# Virtual Environments
+# =========================
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+!.env.template
+
+# =========================
+# Testing & Coverage
+# =========================
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# =========================
+# IDE and Editors
+# =========================
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# OS Files
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# =========================
+# Project Specific
+# =========================
+# Documentation (auto-generated or local)
+CLAUDE.md
+project_structure.md
+guide.md
+.claude/
+
+# Deployment config (contains sensitive settings)
+deployment_config.yaml
+
+# Local test files
+test_*.py
+!tests/test_*.py
+!/scripts/test_*.py
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# =========================
+# Build & Dependencies
+# =========================
+# UV package manager
+.uv/
+
+# Pulumi
+pulumi/Pulumi.*.yaml
+!pulumi/Pulumi.yaml
+.pulumi/
+*.pulumi.yaml.bak
+
+# =========================
+# Logs & Output
+# =========================
+*.log
+logs/
+*.out
+*.err
+
+# =========================
+# Data & Cache
+# =========================
+# Local data files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache directories
+.cache/
+cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# =========================
+# Security
+# =========================
+# Private keys
+*.pem
+*.key
+*.cert
+*.crt
+
+# Secrets
+secrets/
+.secrets/

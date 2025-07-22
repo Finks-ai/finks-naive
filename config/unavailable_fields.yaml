@@ -1,0 +1,22 @@
+# Fields referenced in documentation but not yet available in database
+# These require calculation from historical data
+
+unavailable_fields:
+  - year_over_year_quarterly_revenue_growth  # YoY revenue growth from quarterly data
+  - year_over_year_quarterly_eps_growth  # YoY EPS growth from quarterly data
+  - 5year_annual_total_EPS_growth  # 5-year compound annual growth rate for EPS
+  - 1year_annual_EPS_growth  # 1-year EPS growth rate
+  - 5year_annual_total_revenue_growth  # 5-year compound annual growth rate for revenue
+  - 1year_annual_revenue_growth  # 1-year revenue growth rate
+
+# Implementation notes
+notes:
+  data_source: |
+    These metrics can be calculated from master_income_statement collection
+    which contains historical revenue and EPS data by fiscal period
+  
+  calculation_approach: |
+    1. Query master_income_statement for historical data points
+    2. Calculate year-over-year changes for quarterly data
+    3. Calculate CAGR for multi-year periods
+    4. Store results in new collection or update existing documents

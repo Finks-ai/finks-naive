@@ -1,0 +1,47 @@
+# Query Normalization Rules
+# Used to normalize similar queries for better cache hit rates
+
+# Plural to singular conversions
+plurals:
+  - ["companies", "company"]
+  - ["stocks", "stock"] 
+  - ["sectors", "sector"]
+  - ["dividends", "dividend"]
+  - ["ratios", "ratio"]
+
+# Remove filler words/phrases
+remove_phrases:
+  - "show me"
+  - "find"
+  - "list"
+  - "get"
+  - "please"
+  - "can you"
+  - "i want"
+  - "i need"
+  - "that are"
+  - "that have"
+  - "which are"
+  - "which have"
+
+# Standardize synonyms
+synonyms:
+  - ["inexpensive", "cheap"]
+  - ["low cost", "cheap"]
+  - ["high return", "profitable"]
+  - ["high profit", "profitable"]
+  - ["large cap", "large market cap"]
+  - ["small cap", "small market cap"]
+  - ["tech", "technology"]
+  - ["pharma", "pharmaceutical"]
+  - ["bio", "biotechnology"]
+
+# Common abbreviations
+abbreviations:
+  - ["pe ratio", "p/e ratio"]
+  - ["price earnings", "p/e"]
+  - ["return on equity", "roe"]
+  - ["return on assets", "roa"]
+  - ["earnings per share", "eps"]
+  - ["market capitalization", "market cap"]
+  - ["mkt cap", "market cap"]
