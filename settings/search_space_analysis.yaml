@@ -1,0 +1,136 @@
+# Search space field analysis
+# updated_at: 2025-07-23T05:02:31.096399Z
+
+average_volume:
+  count: 57853
+  max: 14259370000.0
+  min: 0.0
+  sample_values:
+  - 0.0
+  - 5.413312464952469e-10
+  - 9.65186e-06
+  - 0.00401606
+  - 0.00796813
+  - 0.01209677
+  - 0.01606426
+  - 0.02371542
+  - 0.02684564
+  - 0.02734375
+  type: numeric
+beta:
+  count: 19162
+  max: 1065473.16
+  min: -1366978.48
+  sample_values:
+  - -1366978.48
+  - -174785.67
+  - -99074.81
+  - -87528.98
+  - -85338.25
+  - -42957.2
+  - -34324.27
+  - -30206.19
+  - -26407.21
+  - -15353.5
+  type: numeric
+company_country:
+  count: 119
+  sample_values:
+  - AE
+  - AI
+  - AR
+  - AT
+  - AU
+  - AX
+  - AZ
+  - BB
+  - BD
+  - BE
+  subtype: text
+  type: string
+company_sector:
+  count: 11
+  sample_values: []
+  subtype: categorical
+  type: string
+  values:
+  - Basic Materials
+  - Communication Services
+  - Consumer Cyclical
+  - Consumer Defensive
+  - Energy
+  - Financial Services
+  - Healthcare
+  - Industrials
+  - Real Estate
+  - Technology
+  - Utilities
+exchange_acronym:
+  count: 73
+  sample_values:
+  - ''
+  - AMEX
+  - AMS
+  - AQS
+  - ASX
+  - ATH
+  - BER
+  - BME
+  - BRU
+  - BSE
+  subtype: text
+  type: string
+last_updated:
+  count: 5301
+  sample_values:
+  - 2025-07-08 20:59:52.853000
+  - 2025-07-08 21:00:23.263000
+  - 2025-07-08 21:00:25.207000
+  - 2025-07-08 23:52:26.735000
+  - 2025-07-09 23:33:31.785000
+  - 2025-07-09 23:33:57.373000
+  - 2025-07-19 23:00:39.226000
+  - 2025-07-19 23:00:39.227000
+  - 2025-07-19 23:00:39.231000
+  - 2025-07-19 23:00:39.240000
+  type: mixed
+market_capitalization:
+  count: 78079
+  max: 9.223372036471489e+18
+  min: 0.0
+  sample_values:
+  - 0.0
+  - 1.0
+  - 2.0
+  - 3.0
+  - 4.0
+  - 5.0
+  - 6.0
+  - 7.0
+  - 8.0
+  - 9.0
+  type: numeric
+source_collections:
+  count: 3
+  sample_values: []
+  subtype: categorical
+  type: string
+  values:
+  - master_analyst_ratings_consensus
+  - master_profiles
+  - master_ttm_key_metrics_ratios
+symbol:
+  count: 89320
+  sample_values:
+  - 000001.SZ
+  - 000002.SZ
+  - 000004.SZ
+  - 000005.SZ
+  - 000006.SZ
+  - 000007.SZ
+  - 000008.SZ
+  - 000009.SZ
+  - 000010.SZ
+  - 000011.SZ
+  subtype: text
+  type: string

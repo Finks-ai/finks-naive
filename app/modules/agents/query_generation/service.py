@@ -3,7 +3,7 @@ Query Generation Service - Converts unified interpretation into MongoDB queries.
 """
 
 from typing import Dict, Any, List
-from app.core.constants import US_EXCHANGES, US_EXCHANGE_FILTER
+from app.core.constants import US_EXCHANGES, US_EXCHANGE_FILTER, VALUATION_RATIO_FIELDS
 from app.core.retry import retry_on_ai_errors
 from loguru import logger
 import json
@@ -19,10 +19,13 @@ class QueryGenerationService:
     def __init__(self):
         # Get or create the AI agent
         self.query_generation_agent = agent_registry.get_ai_agent(AgentType.QUERY_GENERATION)
+        # Get categorical values for validation and prompt enhancement
+        self.categorical_values = agent_registry.get_categorical_values()
     
     def _ensure_exchange_filter(self, mongodb_query: Dict[str, Any], request: QueryGenerationRequest) -> Dict[str, Any]:
         """Ensure US exchange filter is applied if no exchange filter exists."""
         # Check if exchange_acronym is mentioned in the unified interpretation
+        # TODO: Expand this or make more comprehensive
         has_exchange_mention = any(
             term in request.unified_interpretation.lower() 
             for term in ['exchange', 'canadian', 'foreign', 'international', 'global']
@@ -45,6 +48,64 @@ class QueryGenerationService:
                 mongodb_query.update(US_EXCHANGE_FILTER)
         
         return mongodb_query
+    
+    def _ensure_positive_valuation_ratios(self, mongodb_query: Dict[str, Any]) -> Dict[str, Any]:
+        """Ensure valuation ratio fields exclude negative values when using 'less than' filters.
+        
+        For valuation ratios, negative values are meaningless. When a user asks for 
+        "P/E < 10", they want positive P/E values less than 10, not negative P/E values.
+        
+        Rules:
+        - Only hide negative values when user asks for "less than X" where X is positive
+        - If user doesn't specify a valuation filter, show all values (including negative)
+        - If user specifically asks for "less than -X", show negative values
+        """
+        def process_conditions(conditions: Dict[str, Any]) -> Dict[str, Any]:
+            """Recursively process query conditions to fix valuation ratio filters."""
+            modified_conditions = {}
+            
+            for field, value in conditions.items():
+                if field in VALUATION_RATIO_FIELDS and isinstance(value, dict):
+                    # Check if this field has only a "$lt" or "$lte" operator
+                    has_lt = "$lt" in value or "$lte" in value
+                    has_gt = "$gt" in value or "$gte" in value
+                    
+                    if has_lt and not has_gt:
+                        # Get the threshold value
+                        threshold = value.get("$lt") or value.get("$lte")
+                        
+                        # Only add positive constraint if threshold is positive
+                        if threshold is not None and threshold > 0:
+                            logger.info(f"Adding positive constraint for valuation field: {field} (threshold: {threshold})")
+                            new_value = {"$gt": 0}
+                            new_value.update(value)
+                            modified_conditions[field] = new_value
+                        else:
+                            # Keep original filter for negative thresholds
+                            modified_conditions[field] = value
+                    else:
+                        modified_conditions[field] = value
+                elif field == "$and" and isinstance(value, list):
+                    # Process each condition in the $and array
+                    modified_conditions[field] = [
+                        process_conditions(cond) if isinstance(cond, dict) else cond 
+                        for cond in value
+                    ]
+                elif field == "$or" and isinstance(value, list):
+                    # Process each condition in the $or array
+                    modified_conditions[field] = [
+                        process_conditions(cond) if isinstance(cond, dict) else cond 
+                        for cond in value
+                    ]
+                elif isinstance(value, dict):
+                    # Recursively process nested dictionaries
+                    modified_conditions[field] = process_conditions(value)
+                else:
+                    modified_conditions[field] = value
+            
+            return modified_conditions
+        
+        return process_conditions(mongodb_query)
     
     def _clean_json_string(self, json_str: str) -> str:
         """Clean up JSON string by converting single quotes to double quotes."""
@@ -71,11 +132,15 @@ class QueryGenerationService:
     async def generate_query(self, request: QueryGenerationRequest) -> QueryGenerationResponse:
         """Generate MongoDB query from unified interpretation."""
         
+        # Extract field names from the unified interpretation
+        relevant_fields = [fp.field_name for fp in request.field_priorities]
+        
         # Create the prompt for the agent
         prompt = USER_PROMPT_TEMPLATE.format(
             query=request.query,
             unified_interpretation=request.unified_interpretation,
             field_priorities=self._format_priorities(request.field_priorities),
+            categorical_values=self._format_categorical_values(relevant_fields),
             target_collection=request.target_collection,
             us_exchanges=json.dumps(list(US_EXCHANGES))
         )
@@ -103,6 +168,9 @@ class QueryGenerationService:
         # Ensure US exchange filter is applied if no exchange filter exists
         mongodb_query = self._ensure_exchange_filter(mongodb_query, request)
         
+        # Ensure valuation ratios exclude negative values when using "less than" filters
+        mongodb_query = self._ensure_positive_valuation_ratios(mongodb_query)
+        
         return QueryGenerationResponse(
             mongodb_query=mongodb_query,
             query_explanation=result.data.query_explanation,
@@ -116,6 +184,37 @@ class QueryGenerationService:
         for field_priority in sorted_priorities:
             formatted.append(f"Priority {field_priority.priority}: {field_priority.field_name}")
         return "\n".join(formatted)
+    
+    def _format_categorical_values(self, relevant_fields: List[str] = None) -> str:
+        """Format categorical field values for the prompt.
+        
+        Args:
+            relevant_fields: Optional list of fields mentioned in the query. 
+                           If provided, only show categorical values for these fields.
+        """
+        formatted = []
+        
+        # Priority fields to always include if they have categorical values
+        priority_categorical_fields = {'company_sector', 'source_collections'}
+        
+        for field, info in self.categorical_values.items():
+            if isinstance(info, dict) and 'values' in info:
+                values = info['values']
+                
+                # Include if:
+                # 1. It's a priority field, OR
+                # 2. The field is mentioned in the current query (if relevant_fields provided), OR
+                # 3. No relevant_fields specified AND field has <= 20 values
+                should_include = (
+                    field in priority_categorical_fields or
+                    (relevant_fields and field in relevant_fields) or
+                    (not relevant_fields and len(values) <= 20)
+                )
+                
+                if should_include and len(values) <= 50:  # Hard limit at 50 values
+                    formatted.append(f"- {field}: {json.dumps(values)}")
+        
+        return "\n".join(formatted) if formatted else "No categorical constraints apply"
     
     def _convert_priorities_to_dict(self, field_priorities: List[FieldPriority]) -> Dict[str, int]:
         """Convert list of FieldPriority objects to dict format."""
@@ -154,6 +253,9 @@ class QueryGenerationService:
     async def generate_refinement_query(self, request: QueryGenerationRequest, previous_context) -> QueryGenerationResponse:
         """Generate a refined query that combines previous and new constraints."""
         
+        # Extract field names from the unified interpretation
+        relevant_fields = [fp.field_name for fp in request.field_priorities]
+        
         # Create enhanced prompt for refinement
         prompt = REFINEMENT_PROMPT_TEMPLATE.format(
             previous_query=previous_context.query,
@@ -161,6 +263,7 @@ class QueryGenerationService:
             current_query=request.query,
             unified_interpretation=request.unified_interpretation,
             field_priorities=self._format_priorities(request.field_priorities),
+            categorical_values=self._format_categorical_values(relevant_fields),
             target_collection=request.target_collection
         )
         
@@ -187,6 +290,9 @@ class QueryGenerationService:
         # For refinements, ensure we still have exchange filtering
         # The refinement should preserve the exchange filter from the previous query
         mongodb_query = self._ensure_exchange_filter(mongodb_query, request)
+        
+        # Ensure valuation ratios exclude negative values when using "less than" filters
+        mongodb_query = self._ensure_positive_valuation_ratios(mongodb_query)
         
         return QueryGenerationResponse(
             mongodb_query=mongodb_query,

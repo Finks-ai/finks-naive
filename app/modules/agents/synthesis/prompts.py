@@ -15,10 +15,13 @@ Key considerations:
 - Field importance for the specific query type
 - Logical consistency between field requirements
 - Practical feasibility of the combined criteria
-- DEFAULT EXCHANGE FILTERING: Always add "exchange_acronym IN US exchanges" unless user specifies other countries or exchanges
+- Categorical field values have been validated and normalized (e.g., "banks" → "Financial Services")
+- DEFAULT FILTERS to avoid penny stocks and ensure quality results:
+  1. EXCHANGE FILTERING: Always add "exchange_acronym IN US exchanges" unless user specifies other countries
+  2. MARKET CAP FILTERING: Always add "market_capitalization > 2B" unless user mentions market cap, penny stocks, or small cap
 US exchanges include: {us_exchanges}
 
-Focus on creating a query strategy that best serves the user's underlying intent while prioritizing American exchanges."""
+Focus on creating a query strategy that best serves the user's underlying intent while ensuring quality results by excluding penny stocks and prioritizing American exchanges."""
 
 USER_PROMPT_TEMPLATE = """
 User Query: "{query}"
@@ -26,23 +29,36 @@ User Query: "{query}"
 Field Interpretations:
 {field_interpretations}
 
-IMPORTANT: Always include exchange_acronym filtering for US exchanges unless the user explicitly requests other countries.
-Add interpretation: exchange_acronym: "Filter for US exchanges ({us_exchanges})"
+CRITICAL RULES:
+1. You MUST ONLY use fields that appear in the Field Interpretations above
+2. If the user asks for something (like stock price) that has no field interpretation, you CANNOT add it
+3. Work only with the fields provided - do not invent new fields
+4. The Instruction Processing agent has already selected appropriate categorical values based on the query context
+
+IMPORTANT DEFAULT FILTERS:
+1. Always include exchange_acronym filtering for US exchanges unless the user explicitly requests other countries.
+   Add interpretation: exchange_acronym: "Filter for US exchanges ({us_exchanges})"
+
+2. Always include market_capitalization filter unless the user explicitly mentions market cap, penny stocks, micro cap, or small cap.
+   Add interpretation: market_capitalization: "Greater than 2000000000" (2 billion minimum to exclude penny stocks)
 
 Analyze these interpretations and create a unified query strategy:
 
-1. ALWAYS include exchange_acronym field with priority 2-3 to filter for US exchanges
-2. Identify any conflicts between field requirements
-3. Resolve conflicts by prioritizing based on user intent
-4. Create a unified interpretation that balances all requirements
-5. Assign priority rankings to fields (1=highest, 2=second, etc.)
-6. Explain how conflicts were resolved
+1. ONLY use fields from the Field Interpretations section above
+2. ALWAYS include exchange_acronym field with priority 2-3 to filter for US exchanges
+3. ALWAYS include market_capitalization > 2B with priority 3-4 unless user specifies otherwise
+4. Identify any conflicts between field requirements
+5. Resolve conflicts by prioritizing based on user intent
+6. Create a unified interpretation that balances all requirements
+7. Assign priority rankings to fields (1=highest, 2=second, etc.)
+8. Explain how conflicts were resolved
 
 Priority Guidelines:
 - Primary user intent gets priority 1
 - Exchange filtering gets priority 2-3 (unless user specifies otherwise)
-- Supporting/filtering criteria get priority 3-4
-- Context/nice-to-have criteria get priority 5+
+- Market cap filtering gets priority 3-4 (unless user mentions size)
+- Supporting/filtering criteria get priority 4-5
+- Context/nice-to-have criteria get priority 6+
 
 Example conflict resolution:
 - User wants "cheap profitable stocks" but cheap and profitable might conflict
@@ -65,7 +81,9 @@ Synthesize a refined query strategy that:
 1. COMBINES the previous query constraints with the new refinement
 2. Maintains previous field priorities but adds new ones
 3. Creates a unified interpretation that satisfies BOTH queries
-4. PRESERVES exchange_acronym filtering for US exchanges ({us_exchanges})
+4. PRESERVES default filters:
+   - exchange_acronym filtering for US exchanges ({us_exchanges})
+   - market_capitalization > 2B (unless user specified otherwise)
 
 Example:
 - Previous: "high cap companies" (market_cap > 10B)

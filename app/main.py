@@ -85,8 +85,10 @@ app.add_middleware(
 
 # Include routers
 from app.modules.agents.router import router as agents_router
+from app.modules.settings.router import router as settings_router
 
 app.include_router(agents_router)
+app.include_router(settings_router)
 
 # Root endpoint
 @app.get("/")

@@ -35,6 +35,13 @@ field_mappings:
   exchange_acronym: master_profiles
   market_capitalization: master_profiles
 
+  # Fields from master_income_statement (for growth calculations)
+  total_revenue: master_income_statement
+  earnings_per_share_diluted: master_income_statement
+  earnings_per_share_basic: master_income_statement
+  fiscal_year: master_income_statement
+  fiscal_period: master_income_statement
+
 # Collection descriptions for reference
 collection_descriptions:
   master_ttm_key_metrics_ratios: |
@@ -45,3 +52,6 @@ collection_descriptions:
 
   master_profiles: |
     Core company information and basic metrics
+
+  master_income_statement: |
+    Income statement data including revenue and EPS for growth calculations

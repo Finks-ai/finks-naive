@@ -35,6 +35,9 @@ Unified Interpretation: {unified_interpretation}
 Field Priorities:
 {field_priorities}
 
+Valid Values for Categorical Fields:
+{categorical_values}
+
 Generate a MongoDB query for the {target_collection} collection.
 
 Query Generation Rules:
@@ -44,18 +47,31 @@ Query Generation Rules:
    - Numeric fields: $gt, $gte, $lt, $lte
    - Text fields: $regex, $in
    - Boolean fields: direct true/false
+   - Categorical fields: MUST use exact values from "Valid Values for Categorical Fields" list
 4. Combine conditions with $and when needed
 5. Ensure query is valid MongoDB syntax
+6. CRITICAL: For categorical fields (like company_sector), ONLY use values from the provided list
 
 IMPORTANT: Database stores percentages as decimals:
 - Margin fields (profit_margin, operating_margin, etc.) are stored as decimals
 - 25% in instructions = 0.25 in database
 - 10% in instructions = 0.10 in database
 
+CRITICAL: Valuation Ratio Handling:
+For valuation ratio fields (P/E, P/B, P/S, P/FCF, EV/EBITDA, EV/Sales):
+- When generating "less than X" filters where X is POSITIVE, include "$gt": 0 to exclude negative values
+- Negative valuation ratios are meaningless for analysis in most cases
+- Example: "P/E < 10" should generate: {{"ttm_price_to_earnings_ratio": {{"$gt": 0, "$lt": 10}}}}
+- BUT: If user asks for "P/E < -5", generate: {{"ttm_price_to_earnings_ratio": {{"$lt": -5}}}} (no $gt constraint)
+- If no filter is specified, show all values including negative
+- This applies to: ttm_price_to_earnings_ratio, ttm_price_to_book_ratio, ttm_price_to_sales_ratio, 
+  ttm_price_to_free_cash_flow_ratio, ttm_ev_to_ebitda, ttm_ev_to_sales
+
 Examples:
-- "ttm_price_to_earnings_ratio < 15" → {{"ttm_price_to_earnings_ratio": {{"$lt": 15}}}}
+- "ttm_price_to_earnings_ratio < 15" → {{"ttm_price_to_earnings_ratio": {{"$gt": 0, "$lt": 15}}}}
 - "ttm_net_profit_margin > 0.25" → {{"ttm_net_profit_margin": {{"$gt": 0.25}}}}
 - "company_sector is Technology" → {{"company_sector": "Technology"}}
+- "company_sector is banks" → {{"company_sector": "Financial Services"}} (use exact values from categorical list)
 - "market_capitalization > 10B" → {{"market_capitalization": {{"$gt": 10000000000}}}}
 - "exchange_acronym in US exchanges" → {{"exchange_acronym": {{"$in": {us_exchanges}}}}}
 
@@ -80,6 +96,9 @@ Previous MongoDB Query: {previous_mongodb_query}
 Current Refinement: "{current_query}"
 Unified Interpretation: {unified_interpretation}
 Field Priorities: {field_priorities}
+
+Valid Values for Categorical Fields:
+{categorical_values}
 
 Generate a MongoDB query for the {target_collection} collection that:
 1. COMBINES the previous query constraints with the new refinement

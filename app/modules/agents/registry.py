@@ -134,11 +134,11 @@ class AgentRegistry:
     """
     
     # Shared configurations (loaded once per container)
-    _field_mappings: Optional[Dict[str, str]] = None
     _available_fields: Optional[List[str]] = None
     _field_instructions: Optional[Dict[str, str]] = None
     _field_categories: Optional[Dict[str, Any]] = None
     _unavailable_fields: Optional[List[str]] = None
+    _categorical_values: Optional[Dict[str, Dict[str, Any]]] = None
     
     # AI Agent instances (created once per container)
     _ai_agents: Dict[AgentType, Agent] = {}
@@ -146,7 +146,7 @@ class AgentRegistry:
     def __init__(self):
         self._agents: Dict[AgentType, AgentInfo] = {}
         # Initialize shared configurations on first instance
-        if AgentRegistry._field_mappings is None:
+        if AgentRegistry._field_instructions is None:
             self._initialize_shared_configs()
     
     def builder(self) -> AgentRegistryBuilder:
@@ -216,11 +216,6 @@ class AgentRegistry:
         logger.info("Initializing shared agent configurations...")
         
         try:
-            # Load field mappings
-            config = load_config("field_mappings")
-            AgentRegistry._field_mappings = config.get("field_mappings", {})
-            AgentRegistry._available_fields = list(AgentRegistry._field_mappings.keys())
-            
             # Load field instructions
             AgentRegistry._field_instructions = load_config("field_instructions")
             
@@ -228,25 +223,36 @@ class AgentRegistry:
             AgentRegistry._field_categories = load_config("field_categories")
             
             # Load unavailable fields
-            config = load_config("unavailable_fields")
-            AgentRegistry._unavailable_fields = config.get("unavailable_fields", [])
+            unavailable_config = load_config("unavailable_fields")
+            AgentRegistry._unavailable_fields = unavailable_config.get("unavailable_fields", [])
+            unavailable_fields_set = set(AgentRegistry._unavailable_fields)
+            
+            # Calculate available fields: all fields in field_instructions minus unavailable ones
+            all_instruction_fields = set(AgentRegistry._field_instructions.keys())
+            AgentRegistry._available_fields = sorted(list(all_instruction_fields - unavailable_fields_set))
+            
+            
+            # Load categorical values for fields
+            try:
+                AgentRegistry._categorical_values = load_config("search_space_categorical")
+                logger.info(f"Loaded categorical values for {len(AgentRegistry._categorical_values)} fields")
+            except Exception as e:
+                logger.warning(f"Could not load categorical values: {e}")
+                AgentRegistry._categorical_values = {}
             
             logger.info(f"Loaded shared configs: {len(AgentRegistry._available_fields)} available fields, "
                        f"{len(AgentRegistry._field_instructions)} instructions, "
-                       f"{len(AgentRegistry._unavailable_fields)} unavailable fields")
+                       f"{len(AgentRegistry._unavailable_fields)} unavailable fields, "
+                       f"{len(AgentRegistry._categorical_values)} categorical fields")
         except Exception as e:
             logger.error(f"Failed to initialize shared configs: {e}")
             # Set defaults
-            AgentRegistry._field_mappings = {}
             AgentRegistry._available_fields = []
             AgentRegistry._field_instructions = {}
             AgentRegistry._field_categories = {"categories": {}, "field_to_category": {}}
             AgentRegistry._unavailable_fields = []
+            AgentRegistry._categorical_values = {}
     
-    @classmethod
-    def get_field_mappings(cls) -> Dict[str, str]:
-        """Get shared field mappings."""
-        return cls._field_mappings or {}
     
     @classmethod
     def get_available_fields(cls) -> List[str]:
@@ -267,6 +273,11 @@ class AgentRegistry:
     def get_unavailable_fields(cls) -> List[str]:
         """Get shared unavailable fields list."""
         return cls._unavailable_fields or []
+    
+    @classmethod
+    def get_categorical_values(cls) -> Dict[str, Dict[str, Any]]:
+        """Get shared categorical field values."""
+        return cls._categorical_values or {}
     
     @classmethod
     def get_ai_agent(cls, agent_type: AgentType, create_if_missing: bool = True) -> Optional[Agent]:

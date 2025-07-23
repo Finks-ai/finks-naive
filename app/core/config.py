@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     MONGODB_DB_NAME: str = Field(..., description="MongoDB database name")
     
     # AI API Keys
-    GEMINI_API_KEY: str = Field(..., description="Gemini API key")
+    GOOGLE_API_KEY: str = Field(..., description="Google API key for Gemini")
     OPENAI_API_KEY: str = Field(..., description="OpenAI API key")
     
     # AI Models

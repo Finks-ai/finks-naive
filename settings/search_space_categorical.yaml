@@ -1,0 +1,23 @@
+# Categorical field values for search space
+# updated_at: 2025-07-23T05:02:31.097450Z
+
+company_sector:
+  count: 11
+  values:
+  - Basic Materials
+  - Communication Services
+  - Consumer Cyclical
+  - Consumer Defensive
+  - Energy
+  - Financial Services
+  - Healthcare
+  - Industrials
+  - Real Estate
+  - Technology
+  - Utilities
+source_collections:
+  count: 3
+  values:
+  - master_analyst_ratings_consensus
+  - master_profiles
+  - master_ttm_key_metrics_ratios

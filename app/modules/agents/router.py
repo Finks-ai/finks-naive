@@ -167,14 +167,24 @@ if HAS_CACHE:
             else:
                 # Clear all memory cache
                 cache._memory_cache.clear()
+                
+                # Clear MongoDB cache if available
+                if cache.cache_collection is not None:
+                    try:
+                        result = cache.cache_collection.delete_many({})
+                        logger.info(f"Cleared {result.deleted_count} entries from MongoDB cache")
+                    except Exception as e:
+                        logger.error(f"Failed to clear MongoDB cache: {e}")
+                
+                # Reset stats
                 cache._cache_stats = {
                     "hits": 0,
                     "misses": 0,
                     "memory_hits": 0,
                     "mongodb_hits": 0
                 }
-                logger.info("Cache cleared")
-                return {"status": "success", "message": "Cache cleared successfully"}
+                logger.info("Cache cleared (memory and MongoDB)")
+                return {"status": "success", "message": "Cache cleared successfully (both memory and MongoDB)"}
         
         except Exception as e:
             logger.error(f"Error clearing cache: {str(e)}")

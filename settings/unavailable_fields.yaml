@@ -2,12 +2,20 @@
 # These require calculation from historical data
 
 unavailable_fields:
-  - year_over_year_quarterly_revenue_growth  # YoY revenue growth from quarterly data
-  - year_over_year_quarterly_eps_growth  # YoY EPS growth from quarterly data
-  - 5year_annual_total_EPS_growth  # 5-year compound annual growth rate for EPS
-  - 1year_annual_EPS_growth  # 1-year EPS growth rate
-  - 5year_annual_total_revenue_growth  # 5-year compound annual growth rate for revenue
-  - 1year_annual_revenue_growth  # 1-year revenue growth rate
+  # Price-related fields
+  - price  # Current stock price
+  - stock_price  # Current stock price
+  - share_price  # Current share price
+  - current_price  # Current trading price
+  
+  # Growth metrics - NOW AVAILABLE IN master_search collection
+  # These fields have been calculated and added during normalization:
+  # - year_over_year_quarterly_revenue_growth
+  # - year_over_year_quarterly_eps_growth  
+  # - 5year_annual_total_EPS_growth
+  # - 1year_annual_EPS_growth
+  # - 5year_annual_total_revenue_growth
+  # - 1year_annual_revenue_growth
 
 # Implementation notes
 notes:

@@ -6,7 +6,7 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 # Copy project files
 COPY pyproject.toml uv.lock ./
 COPY app ./app
-COPY config ./config
+COPY settings ./settings
 
 # Install dependencies using uv pip install to system Python
 RUN uv pip install --system -r <(uv export --format requirements-txt --no-hashes)

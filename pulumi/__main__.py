@@ -90,21 +90,21 @@ lambda_policy_attachment = aws.iam.RolePolicyAttachment(
 lambda_config = {
     "dev": {
         "memory_size": 256,  # Reduced based on logs showing only 128MB used
-        "timeout": 60,  # Increased to handle init timeout
+        "timeout": 60 * 5,  # Increased to handle init timeout
         "reserved_concurrent": 0,  # No reserved for dev
         "provisioned_concurrent": 0  # No provisioned for dev
     },
     "staging": {
         "memory_size": 512,
-        "timeout": 60,
-        "reserved_concurrent": 2,
-        "provisioned_concurrent": 0
+        "timeout": 60 * 5,
+        # "reserved_concurrent": 2,
+        # "provisioned_concurrent": 0
     },
     "prod": {
-        "memory_size": 1024,  # As per deployment_config.yaml
-        "timeout": 30,
-        "reserved_concurrent": 10,  # As per deployment_config.yaml
-        "provisioned_concurrent": 2  # Keep 2 warm instances
+        "memory_size": 1024,  
+        "timeout": 60 * 15,
+        # "reserved_concurrent": 3,  
+        # "provisioned_concurrent": 1  # Keep 2 warm instances
     }
 }
 
@@ -125,7 +125,7 @@ lambda_function = aws.lambda_.Function(
             "ENVIRONMENT": environment,
             "MONGODB_URL": env_vars.get("MONGODB_URL", ""),
             "MONGODB_DB_NAME": env_vars.get("MONGODB_DB_NAME", ""),
-            "GEMINI_API_KEY": env_vars.get("GEMINI_API_KEY", ""),
+            "GOOGLE_API_KEY": env_vars.get("GOOGLE_API_KEY", ""),
             "OPENAI_API_KEY": env_vars.get("OPENAI_API_KEY", ""),
             # MongoDB optimization settings
             "MONGODB_MAX_POOL_SIZE": "1",

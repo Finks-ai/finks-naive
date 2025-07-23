@@ -17,6 +17,7 @@ class InstructionProcessingService:
         self.available_fields = agent_registry.get_available_fields()
         self.unavailable_fields = agent_registry.get_unavailable_fields()
         self.field_instructions = self._filter_field_instructions()
+        self.categorical_values = agent_registry.get_categorical_values()
         # Get or create the AI agent
         self.ai_agent = agent_registry.get_ai_agent(AgentType.INSTRUCTION_PROCESSING)
     
@@ -54,10 +55,18 @@ class InstructionProcessingService:
             for field in valid_fields
         }
         
+        # Get categorical values for relevant fields
+        relevant_categorical = {
+            field: self.categorical_values.get(field, {})
+            for field in valid_fields
+            if field in self.categorical_values
+        }
+        
         # Create the prompt for the agent
         prompt = USER_PROMPT_TEMPLATE.format(
             query=request.query,
-            field_instructions=self._format_instructions(relevant_instructions)
+            field_instructions=self._format_instructions(relevant_instructions),
+            categorical_values=self._format_categorical_values(relevant_categorical)
         )
         
         # Run the agent
@@ -74,6 +83,19 @@ class InstructionProcessingService:
         for field, instruction in instructions.items():
             formatted.append(f"{field}: {instruction}")
         return "\n".join(formatted)
+    
+    def _format_categorical_values(self, categorical: Dict[str, Dict]) -> str:
+        """Format categorical values for the prompt."""
+        if not categorical:
+            return "No categorical fields in this query."
+        
+        formatted = []
+        for field, cat_info in categorical.items():
+            values = cat_info.get('values', [])
+            if values:
+                formatted.append(f"{field}: {', '.join(values)}")
+        
+        return "\n".join(formatted) if formatted else "No categorical fields in this query."
     
     async def process_query_instructions(self, query: str, relevant_fields: List[str]) -> InstructionProcessingResponse:
         """Convenience method to process instructions for a query."""

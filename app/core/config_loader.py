@@ -20,7 +20,7 @@ def load_config(config_name: str, config_dir: Path = None) -> Dict[str, Any]:
     """
     if config_dir is None:
         # Default to project config directory
-        config_dir = Path(__file__).parent.parent.parent / "config"
+        config_dir = Path(__file__).parent.parent.parent / "settings"
     
     yaml_path = config_dir / f"{config_name}.yaml"
     
@@ -44,7 +44,7 @@ def save_config(data: Dict[str, Any], config_name: str, config_dir: Path = None)
         Path to saved file
     """
     if config_dir is None:
-        config_dir = Path(__file__).parent.parent.parent / "config"
+        config_dir = Path(__file__).parent.parent.parent / "settings"
     
     output_path = config_dir / f"{config_name}.yaml"
     
