@@ -21,18 +21,45 @@ Field mapping hints:
 
 SORTING_PATTERNS = {
     "descending_indicators": [
-        "biggest", "largest", "top", "highest", "most", "greatest",
-        "maximum", "best", "leading", "major", "primary"
+        "biggest",
+        "largest",
+        "top",
+        "highest",
+        "most",
+        "greatest",
+        "maximum",
+        "best",
+        "leading",
+        "major",
+        "primary",
     ],
     "ascending_indicators": [
-        "smallest", "lowest", "bottom", "least", "fewest", "minimum",
-        "worst", "trailing", "minor", "cheapest"
+        "smallest",
+        "lowest",
+        "bottom",
+        "least",
+        "fewest",
+        "minimum",
+        "worst",
+        "trailing",
+        "minor",
+        "cheapest",
     ],
     "explicit_sorting": [
-        "sort by", "order by", "rank by", "arrange by", "list by",
-        "show by", "display by", "from high to low", "from low to high",
-        "ascending", "descending", "asc", "desc"
-    ]
+        "sort by",
+        "order by",
+        "rank by",
+        "arrange by",
+        "list by",
+        "show by",
+        "display by",
+        "from high to low",
+        "from low to high",
+        "ascending",
+        "descending",
+        "asc",
+        "desc",
+    ],
 }
 
 DEFAULT_FIELD_MAPPINGS = {
@@ -57,7 +84,7 @@ DEFAULT_FIELD_MAPPINGS = {
     "volume": "volume",
     "beta": "beta",
     "roe": "return_on_equity",
-    "return on equity": "return_on_equity"
+    "return on equity": "return_on_equity",
 }
 
 CONTEXTUAL_DEFAULTS = {
@@ -67,5 +94,5 @@ CONTEXTUAL_DEFAULTS = {
     "performance": "price_change_percentage_YTD",
     "dividend": "dividend_yield",
     "expensive": "pe_ratio",
-    "cheap": "pe_ratio"
+    "cheap": "pe_ratio",
 }

@@ -4,7 +4,7 @@
 
 ttm_price_to_free_cash_flow_ratio: |
   Lower values imply more attractive (cheaper) valuation
-  
+
   - If user requests **"undervalued", "cheap",** or **"value"**, pick the lowest threshold available (e.g., **"Under 5"** or **"Under 10"**).
   - If user requests **"fair value"** or gives no valuation preference, choose a mid-range threshold (e.g., **"Under 20"**).
   - If user requests **"high-valuation"** or **"over-valued"**, set the filter to **"> 20"**
@@ -183,7 +183,7 @@ company_sector: |
 company_country: |
   Headquarters or primary listing country.
   • Translate any country reference—full name, abbreviation, 3-letter code, or demonym—into its two-letter ISO 3166-1 alpha-2 code, and use that code as the filter value (e.g., “United States,” “USA,” “U.S.” → US; “Canada,” “CA” → CA; “Japan,” “JP” → JP).
-  
+
   • If the user requests “domestic,” substitute the code that matches the user’s locale; otherwise leave this filter unset.
 
 ttm_dividend_yield: |

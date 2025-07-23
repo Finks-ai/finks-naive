@@ -66,6 +66,23 @@ coverage.xml
 cover/
 
 # =========================
+# Code Quality Tools
+# =========================
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff
+.ruff_cache/
+
+# Bandit
+bandit-report.json
+
+# Pre-commit
+.pre-commit-config.yaml.lock
+
+# =========================
 # IDE and Editors
 # =========================
 # VS Code

@@ -17,50 +17,35 @@ OPERATOR_MAPPING = {
         "less_than": "$lt",
         "less_equal": "$lte",
         "equals": {"direct": "value"},
-        "not_equals": "$ne"
+        "not_equals": "$ne",
     },
-    "array_operators": {
-        "in_list": "$in",
-        "not_in_list": "$nin",
-        "all_of": "$all"
-    },
-    "logical_operators": {
-        "and": "$and",
-        "or": "$or",
-        "not": "$not",
-        "nor": "$nor"
-    },
-    "text_operators": {
-        "regex": "$regex",
-        "options": "$options"
-    },
-    "existence_operators": {
-        "exists": "$exists",
-        "type": "$type"
-    }
+    "array_operators": {"in_list": "$in", "not_in_list": "$nin", "all_of": "$all"},
+    "logical_operators": {"and": "$and", "or": "$or", "not": "$not", "nor": "$nor"},
+    "text_operators": {"regex": "$regex", "options": "$options"},
+    "existence_operators": {"exists": "$exists", "type": "$type"},
 }
 
 QUERY_CONSTRUCTION_PATTERNS = {
     "single_condition": {
         "pattern": '{"field": {"$operator": value}}',
-        "example": '{"ttm_price_to_earnings_ratio": {"$lt": 15}}'
+        "example": '{"ttm_price_to_earnings_ratio": {"$lt": 15}}',
     },
     "multiple_conditions_same_field": {
         "pattern": '{"field": {"$gte": min_value, "$lte": max_value}}',
-        "example": '{"market_capitalization": {"$gte": 1000000000, "$lte": 10000000000}}'
+        "example": '{"market_capitalization": {"$gte": 1000000000, "$lte": 10000000000}}',
     },
     "and_conditions": {
         "pattern": '{"$and": [condition1, condition2, ...]}',
-        "example": '{"$and": [{"ttm_price_to_earnings_ratio": {"$lt": 15}}, {"ttm_dividend_yield": {"$gt": 0.02}}]}'
+        "example": '{"$and": [{"ttm_price_to_earnings_ratio": {"$lt": 15}}, {"ttm_dividend_yield": {"$gt": 0.02}}]}',
     },
     "or_conditions": {
         "pattern": '{"$or": [condition1, condition2, ...]}',
-        "example": '{"$or": [{"company_sector": "Technology"}, {"company_sector": "Healthcare"}]}'
+        "example": '{"$or": [{"company_sector": "Technology"}, {"company_sector": "Healthcare"}]}',
     },
     "in_array": {
         "pattern": '{"field": {"$in": [value1, value2, ...]}}',
-        "example": '{"exchange_acronym": {"$in": ["NASDAQ", "NYSE", "AMEX"]}}'
-    }
+        "example": '{"exchange_acronym": {"$in": ["NASDAQ", "NYSE", "AMEX"]}}',
+    },
 }
 
 JSON_FORMATTING_RULES = """

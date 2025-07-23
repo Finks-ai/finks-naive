@@ -20,7 +20,7 @@ class AgentRegistry:
     _field_instructions: Optional[Dict[str, str]] = None
     _field_categories: Optional[Dict[str, Any]] = None
     _unavailable_fields: Optional[List[str]] = None
-    
+
     # AI Agent instances (created once per container)
     _ai_agents: Dict[AgentType, Agent] = {}
 ```

@@ -25,7 +25,7 @@ async def process_query_stream(request: AgentPipelineRequest):
         # Stream pipeline progress
         async for event in agent_pipeline_service.process_query_stream(request):
             yield f"data: {json.dumps(event)}\n\n"
-    
+
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream",
@@ -48,10 +48,10 @@ async def websocket_query(websocket: WebSocket):
     try:
         data = await websocket.receive_json()
         request = AgentPipelineRequest(**data)
-        
+
         async for event in agent_pipeline_service.process_query_stream(request):
             await websocket.send_json(event)
-            
+
     except Exception as e:
         await websocket.send_json({"error": str(e)})
     finally:
@@ -65,19 +65,19 @@ async def websocket_query(websocket: WebSocket):
 # app/modules/agents/service_streaming.py
 class StreamingAgentPipelineService:
     async def process_query_stream(
-        self, 
+        self,
         request: AgentPipelineRequest
     ) -> AsyncGenerator[Dict[str, Any], None]:
-        
+
         # Stream field extraction start
         yield {
             "stage": "field_extraction",
             "status": "started",
             "message": "Analyzing query to identify relevant database fields..."
         }
-        
+
         field_result = await self.field_extraction.extract_fields_from_query(request.query)
-        
+
         yield {
             "stage": "field_extraction",
             "status": "completed",
@@ -87,14 +87,14 @@ class StreamingAgentPipelineService:
                 "reasoning": field_result.reasoning
             }
         }
-        
+
         # Stream instruction processing
         yield {
             "stage": "instruction_processing",
             "status": "started",
             "message": f"Processing instructions for {len(field_result.relevant_fields)} fields..."
         }
-        
+
         # Continue for each stage...
 ```
 
@@ -120,7 +120,7 @@ const eventSource = new EventSource('/agents/query/stream');
 
 eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    
+
     switch(data.stage) {
         case 'field_extraction':
             updateUI('Identifying relevant fields...', data);
@@ -146,7 +146,7 @@ def lambda_handler(event, context):
     def response_stream():
         yield json.dumps({"stage": "starting"})
         # Process and yield events
-        
+
     return {
         'statusCode': 200,
         'headers': {
@@ -173,7 +173,7 @@ async def extract_fields_progressive(self, query: str):
     quick_prompt = f"List relevant database fields for: {query}"
     quick_result = await self.agent.run(quick_prompt)
     yield {"fields_identified": quick_result}
-    
+
     # Then, detailed analysis
     detailed_prompt = f"Explain why these fields are relevant: {quick_result}"
     detailed_result = await self.agent.run(detailed_prompt)
@@ -189,7 +189,7 @@ async def stream_parallel_agents(self, query: str):
         "sorting": self.extract_sorting(query),
         "context": self.analyze_context(query)
     }
-    
+
     # Stream results as they complete
     for coro in asyncio.as_completed(tasks.values()):
         result = await coro

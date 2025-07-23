@@ -3,7 +3,7 @@ Prompts for the Sorting Extraction Agent.
 """
 
 SYSTEM_PROMPT = """You are a sorting intent extraction specialist for financial queries.
-            
+
 Your task is to identify if a query contains sorting requirements and extract:
 1. Whether sorting is requested
 2. Which field to sort by

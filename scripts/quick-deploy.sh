@@ -35,17 +35,17 @@ log_error() {
 # Quick redeploy (only updates the Docker image)
 quick_redeploy() {
     log_info "Quick redeployment - updating Docker image only..."
-    
+
     cd pulumi
-    
+
     # Update just the image
     pulumi up --yes --stack $STACK_NAME --target "awsx:ecr:Image\$docker-build:index:Image::*"
-    
+
     # Get function URL
     export FUNCTION_URL=$(pulumi stack output function_url --stack $STACK_NAME)
-    
+
     cd ..
-    
+
     log_success "Quick redeployment completed!"
     log_info "Function URL: $FUNCTION_URL"
     log_info "API Docs: ${FUNCTION_URL}docs"

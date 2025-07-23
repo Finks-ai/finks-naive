@@ -39,63 +39,63 @@ log_error() {
 # Check prerequisites
 check_prerequisites() {
     log_info "Checking prerequisites..."
-    
+
     # Check if pulumi is installed
     if ! command -v pulumi &> /dev/null; then
         log_error "Pulumi CLI not found. Please install it first."
         exit 1
     fi
-    
+
     # Check if AWS CLI is installed
     if ! command -v aws &> /dev/null; then
         log_error "AWS CLI not found. Please install it first."
         exit 1
     fi
-    
+
     # Check if uv is installed
     if ! command -v uv &> /dev/null; then
         log_error "uv not found. Please install it first."
         exit 1
     fi
-    
+
     # Check AWS credentials
     if ! aws sts get-caller-identity &> /dev/null; then
         log_error "AWS credentials not configured. Please run 'aws configure'."
         exit 1
     fi
-    
+
     log_success "Prerequisites check passed"
 }
 
 # Deploy infrastructure
 deploy_infrastructure() {
     log_info "Deploying infrastructure with Pulumi..."
-    
+
     cd pulumi
-    
+
     # Install Python dependencies
     log_info "Installing Pulumi dependencies..."
     pip install -r requirements.txt
-    
+
     # Deploy stack
     log_info "Deploying stack: $STACK_NAME"
     pulumi up --yes --stack $STACK_NAME
-    
+
     # Get outputs
     log_info "Getting deployment outputs..."
     export FUNCTION_NAME=$(pulumi stack output lambda_function_name --stack $STACK_NAME)
     export FUNCTION_URL=$(pulumi stack output function_url --stack $STACK_NAME)
     export FUNCTION_DOCS_URL=$(pulumi stack output function_url_endpoint --stack $STACK_NAME)
-    
+
     cd ..
-    
+
     log_success "Infrastructure deployed successfully"
 }
 
 # Check environment variables
 check_environment_variables() {
     log_info "Checking environment variables..."
-    
+
     # Check if .env file exists
     if [ -f .env ]; then
         log_success "Environment variables file (.env) found"
@@ -109,28 +109,28 @@ check_environment_variables() {
 # Test deployment
 test_deployment() {
     log_info "Testing deployment..."
-    
+
     # Test root endpoint
     log_info "Testing root endpoint..."
     response=$(curl -s -o /dev/null -w "%{http_code}" "$FUNCTION_URL")
-    
+
     if [ "$response" -eq 200 ]; then
         log_success "Root endpoint test passed"
     else
         log_error "Root endpoint test failed with status code: $response"
         exit 1
     fi
-    
+
     # Test health endpoint
     log_info "Testing health endpoint..."
     response=$(curl -s -o /dev/null -w "%{http_code}" "$FUNCTION_URL/health")
-    
+
     if [ "$response" -eq 200 ]; then
         log_success "Health endpoint test passed"
     else
         log_warning "Health endpoint test failed with status code: $response (might be database connection issue)"
     fi
-    
+
     log_success "Deployment testing completed"
 }
 
@@ -150,13 +150,13 @@ display_deployment_info() {
 main() {
     log_info "Starting Finks Naive deployment..."
     echo ""
-    
+
     check_prerequisites
     check_environment_variables
     deploy_infrastructure
     test_deployment
     display_deployment_info
-    
+
     log_success "Deployment completed successfully!"
 }
 

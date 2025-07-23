@@ -2,8 +2,6 @@
 Prompts for the Query Generation Agent.
 """
 
-from app.core.constants import US_EXCHANGES
-
 SYSTEM_PROMPT = """You are a query generation agent that converts unified field interpretations into MongoDB queries.
 
 Your task is to create a MongoDB query for the master_search collection based on the unified interpretation and field priorities.
@@ -64,7 +62,7 @@ For valuation ratio fields (P/E, P/B, P/S, P/FCF, EV/EBITDA, EV/Sales):
 - Example: "P/E < 10" should generate: {{"ttm_price_to_earnings_ratio": {{"$gt": 0, "$lt": 10}}}}
 - BUT: If user asks for "P/E < -5", generate: {{"ttm_price_to_earnings_ratio": {{"$lt": -5}}}} (no $gt constraint)
 - If no filter is specified, show all values including negative
-- This applies to: ttm_price_to_earnings_ratio, ttm_price_to_book_ratio, ttm_price_to_sales_ratio, 
+- This applies to: ttm_price_to_earnings_ratio, ttm_price_to_book_ratio, ttm_price_to_sales_ratio,
   ttm_price_to_free_cash_flow_ratio, ttm_ev_to_ebitda, ttm_ev_to_sales
 
 Examples:

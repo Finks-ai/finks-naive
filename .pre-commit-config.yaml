@@ -1,0 +1,64 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^(app/|tests/).*\.py$
+      - id: end-of-file-fixer
+        files: ^(app/|tests/).*\.py$
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^(app/|tests/).*\.py$
+      - id: ruff-format
+        files: ^(app/|tests/).*\.py$
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        files: ^(app/|tests/).*\.py$
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        files: ^(app/|tests/).*\.py$
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.0
+    hooks:
+      - id: mypy
+        args: ["--verbose"]
+        files: ^(app/|tests/).*\.py$
+        additional_dependencies:
+          - pydantic
+          - pytest
+          - pydantic-settings
+          - pydantic-ai
+          - fastapi
+          - pymongo
+          - loguru
+          - httpx
+          - typing-extensions
+          - types-PyYAML
+          - types-requests
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.8.0
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        files: ^(app/|tests/).*\.py$
+        additional_dependencies:
+          - bandit[toml]
+          - toml

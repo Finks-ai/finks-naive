@@ -2,8 +2,6 @@
 Prompts for the Synthesis Agent.
 """
 
-from app.core.constants import US_EXCHANGES
-
 SYSTEM_PROMPT = """You are a synthesis agent that combines multiple field interpretations into a unified query strategy.
 
 Your task is to take individual field interpretations and create a cohesive query plan that resolves conflicts and prioritizes fields appropriately.

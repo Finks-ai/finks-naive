@@ -2,7 +2,7 @@
 Settings Module - Centralized configuration management and refresh capabilities.
 """
 
-from .service import settings_service
 from .router import router
+from .service import settings_service
 
-__all__ = ["settings_service", "router"]
+__all__ = ["router", "settings_service"]

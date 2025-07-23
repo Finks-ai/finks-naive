@@ -7,11 +7,11 @@ unavailable_fields:
   - stock_price  # Current stock price
   - share_price  # Current share price
   - current_price  # Current trading price
-  
+
   # Growth metrics - NOW AVAILABLE IN master_search collection
   # These fields have been calculated and added during normalization:
   # - year_over_year_quarterly_revenue_growth
-  # - year_over_year_quarterly_eps_growth  
+  # - year_over_year_quarterly_eps_growth
   # - 5year_annual_total_EPS_growth
   # - 1year_annual_EPS_growth
   # - 5year_annual_total_revenue_growth
@@ -22,7 +22,7 @@ notes:
   data_source: |
     These metrics can be calculated from master_income_statement collection
     which contains historical revenue and EPS data by fiscal period
-  
+
   calculation_approach: |
     1. Query master_income_statement for historical data points
     2. Calculate year-over-year changes for quarterly data

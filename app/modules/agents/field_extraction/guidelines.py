@@ -28,5 +28,5 @@ FIELD_MAPPING_EXAMPLES = {
     "value stocks": ["ttm_price_to_book_ratio", "ttm_price_to_earnings_ratio", "ttm_dividend_yield"],
     "quality companies": ["ttm_return_on_equity", "ttm_return_on_assets", "debt_to_equity_ratio"],
     "safe investments": ["ttm_dividend_yield", "debt_to_equity_ratio", "ttm_current_ratio"],
-    "high margin": ["ttm_net_profit_margin", "ttm_operating_margin", "ttm_gross_margin"]
+    "high margin": ["ttm_net_profit_margin", "ttm_operating_margin", "ttm_gross_margin"],
 }

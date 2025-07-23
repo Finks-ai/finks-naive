@@ -1,40 +1,45 @@
 import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
 from loguru import logger
-import asyncio
+from mangum import Mangum
 
 from app.core.config import get_settings
 from app.core.database import get_db_service
+from app.modules.agents.router import router as agents_router
+from app.modules.settings.router import router as settings_router
 
 # Check if we're in Lambda environment
 IS_LAMBDA = bool(os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
 
 settings = get_settings()
 
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     """
     Lifespan context manager for FastAPI.
     Handles initialization and cleanup with Lambda optimizations when applicable.
     """
     logger.info(f"Starting up Finks Naive API{' (Lambda)' if IS_LAMBDA else ''}...")
-    
+
     if IS_LAMBDA:
         # Import Lambda optimizer only if in Lambda environment
         from app.core.optimizer import LambdaOptimizer, get_connection_pool_manager
-        
+
         # Apply Lambda optimizations
         LambdaOptimizer.optimize_for_lambda()
-        
+
         # Initialize connection pool manager
-        pool_manager = get_connection_pool_manager()
-        
+        get_connection_pool_manager()
+
         # Warm up connections
         LambdaOptimizer.warmup_connections()
-        
+
         # Run async warmup tasks
         await LambdaOptimizer.run_warmup_tasks()
     else:
@@ -46,11 +51,11 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.error(f"Failed to connect to database: {e}")
             raise
-    
+
     logger.info("Startup complete")
-    
+
     yield
-    
+
     # Cleanup on shutdown
     if IS_LAMBDA:
         # Minimal cleanup for Lambda (connections persist across invocations)
@@ -63,6 +68,7 @@ async def lifespan(app: FastAPI):
             logger.info("Database connection closed")
         except Exception as e:
             logger.error(f"Error during shutdown: {e}")
+
 
 app = FastAPI(
     title="Finks Naive API",
@@ -84,73 +90,76 @@ app.add_middleware(
 )
 
 # Include routers
-from app.modules.agents.router import router as agents_router
-from app.modules.settings.router import router as settings_router
-
 app.include_router(agents_router)
 app.include_router(settings_router)
 
+
 # Root endpoint
 @app.get("/")
-async def root():
+async def root() -> dict[str, Any]:
     return {
         "message": f"Finks Naive API - Environment: {settings.ENVIRONMENT}",
         "version": "0.2.0",
         "docs_url": "/docs",
         "lambda_environment": IS_LAMBDA,
-        "optimizations": {
-            "parallel_execution": True,
-            "multi_level_caching": True,
-            "connection_pooling": True,
-            "lambda_optimized": IS_LAMBDA
-        } if IS_LAMBDA else {}
+        "optimizations": (
+            {
+                "parallel_execution": True,
+                "multi_level_caching": True,
+                "connection_pooling": True,
+                "lambda_optimized": IS_LAMBDA,
+            }
+            if IS_LAMBDA
+            else {}
+        ),
     }
+
 
 # Health check endpoint
 @app.get("/health")
-async def health():
+async def health() -> dict[str, Any]:
     try:
         if IS_LAMBDA:
             # Use connection pool manager in Lambda
             from app.core.optimizer import get_connection_pool_manager
+
             pool_manager = get_connection_pool_manager()
             db = pool_manager.get_database(settings.MONGODB_DB_NAME)
-            db.command('ping')
-            
+            db.command("ping")
+
             # Get cache stats if available
             try:
                 from app.core.cache import get_query_cache
+
                 cache = get_query_cache()
                 cache_stats = cache.get_stats()
             except ImportError:
                 cache_stats = None
-            
+
             return {
                 "status": "healthy",
                 "database": "connected",
                 "cache_stats": cache_stats,
-                "lambda_environment": True
+                "lambda_environment": True,
             }
         else:
             # Standard health check
             db_service = get_db_service()
-            db_service.get_client().admin.command('ping')
-            return {
-                "status": "healthy",
-                "database": "connected",
-                "lambda_environment": False
-            }
+            db_service.get_client().admin.command("ping")
+            return {"status": "healthy", "database": "connected", "lambda_environment": False}
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Health check failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Health check failed: {e}") from e
+
 
 # Performance stats endpoint (only if optimizations are available)
 @app.get("/stats/performance")
-async def performance_stats():
+async def performance_stats() -> dict[str, Any]:
     """Get performance statistics including cache hit rates and execution times."""
     try:
         from app.core.cache import get_query_cache
+
         cache = get_query_cache()
-        
+
         return {
             "cache_performance": cache.get_stats(),
             "lambda_optimized": IS_LAMBDA,
@@ -159,8 +168,8 @@ async def performance_stats():
                 "multi_level_caching": True,
                 "connection_pooling": True,
                 "lazy_loading": IS_LAMBDA,
-                "request_batching": True
-            }
+                "request_batching": True,
+            },
         }
     except ImportError:
         # Return basic stats if optimization modules not available
@@ -171,18 +180,20 @@ async def performance_stats():
                 "multi_level_caching": False,
                 "connection_pooling": False,
                 "lazy_loading": False,
-                "request_batching": False
-            }
+                "request_batching": False,
+            },
         }
+
 
 # Configure Mangum handler based on environment
 if IS_LAMBDA:
     # Lambda deployment with lifespan="off" for MongoDB compatibility
     # Also wrap handler if lambda optimization available
     raw_handler = Mangum(app, lifespan="off")
-    
+
     try:
         from app.core.optimizer import lambda_handler_wrapper
+
         handler = lambda_handler_wrapper(raw_handler)
     except ImportError:
         # Use raw handler if wrapper not available
@@ -195,30 +206,23 @@ else:
 if IS_LAMBDA:
     try:
         from app.core.optimizer import LambdaOptimizer
-        
-        def register_warmup_tasks():
+
+        def register_warmup_tasks() -> None:
             """Register tasks to run during Lambda warmup."""
-            
-            async def warmup_agents():
+
+            async def warmup_agents() -> None:
                 """Preload agent models."""
-                try:
-                    # Try optimized service first
-                    from app.modules.agents.service_optimized import optimized_agent_pipeline_service
-                    service = optimized_agent_pipeline_service
-                except ImportError:
-                    # Fall back to standard service
-                    from app.modules.agents.service import agent_pipeline_service
-                    service = agent_pipeline_service
-                
-                # Just accessing properties will trigger lazy loading
-                _ = service.field_extraction
-                _ = service.sorting_extraction
+                from app.modules.agents.service import AgentPipelineService
+
+                # Create service instance to trigger initialization
+                _ = AgentPipelineService()
                 logger.info("Agent models warmed up")
-            
-            async def warmup_cache():
+
+            async def warmup_cache() -> None:
                 """Initialize cache connections."""
                 try:
                     from app.core.cache import get_query_cache
+
                     cache = get_query_cache()
                     # Test cache operations
                     test_key = "_warmup_test"
@@ -227,10 +231,10 @@ if IS_LAMBDA:
                     logger.info("Cache warmed up")
                 except ImportError:
                     logger.info("Cache module not available for warmup")
-            
+
             LambdaOptimizer.register_warmup_task(warmup_agents)
             LambdaOptimizer.register_warmup_task(warmup_cache)
-        
+
         # Register warmup tasks
         register_warmup_tasks()
     except ImportError:
@@ -239,4 +243,5 @@ if IS_LAMBDA:
 # For local development
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)

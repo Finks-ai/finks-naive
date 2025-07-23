@@ -49,7 +49,7 @@ CATEGORICAL FIELD SELECTION:
 Provide specific interpretations that can be used to generate database filters.
 
 Examples:
-- If user asks for "cheap stocks" and PE ratio instruction mentions "undervalued < 15", 
+- If user asks for "cheap stocks" and PE ratio instruction mentions "undervalued < 15",
   interpret as "ttm_price_to_earnings_ratio < 15"
 - If user asks for "high margin" and instruction mentions "> 25%",
   interpret as "ttm_net_profit_margin > 0.25"

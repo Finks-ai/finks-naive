@@ -16,21 +16,11 @@ GUIDELINES = """Guidelines:
 PROCESSING_RULES = {
     "percentage_conversion": {
         "description": "Convert percentage values to decimals",
-        "examples": {
-            "25%": 0.25,
-            "10%": 0.10,
-            "100%": 1.0,
-            "5%": 0.05
-        }
+        "examples": {"25%": 0.25, "10%": 0.10, "100%": 1.0, "5%": 0.05},
     },
     "monetary_conversion": {
         "description": "Convert monetary values to numeric",
-        "examples": {
-            "$1B": 1000000000,
-            "$10B": 10000000000,
-            "$100M": 100000000,
-            "$1M": 1000000
-        }
+        "examples": {"$1B": 1000000000, "$10B": 10000000000, "$100M": 100000000, "$1M": 1000000},
     },
     "qualitative_mapping": {
         "description": "Map qualitative terms to quantitative thresholds",
@@ -40,7 +30,7 @@ PROCESSING_RULES = {
             "high": "top 25% or above specified threshold",
             "low": "bottom 25% or below specified threshold",
             "strong": "significantly above average",
-            "weak": "significantly below average"
-        }
-    }
+            "weak": "significantly below average",
+        },
+    },
 }

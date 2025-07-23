@@ -4,7 +4,7 @@
 # Plural to singular conversions
 plurals:
   - ["companies", "company"]
-  - ["stocks", "stock"] 
+  - ["stocks", "stock"]
   - ["sectors", "sector"]
   - ["dividends", "dividend"]
   - ["ratios", "ratio"]

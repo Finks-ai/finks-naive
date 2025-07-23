@@ -90,7 +90,7 @@ curl -X POST http://localhost:8000/api/v1/query \
 finks-naive/
 ├── app/                      # Application code
 │   ├── core/                # Core utilities (config, database, cache)
-│   ├── modules/            
+│   ├── modules/
 │   │   └── agents/         # AI agents implementation
 │   │       ├── field_extraction/
 │   │       ├── instruction_processing/

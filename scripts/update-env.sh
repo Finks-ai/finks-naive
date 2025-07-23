@@ -37,19 +37,19 @@ get_function_name() {
     cd pulumi
     FUNCTION_NAME=$(pulumi stack output lambda_function_name --stack $STACK_NAME)
     cd ..
-    
+
     if [ -z "$FUNCTION_NAME" ]; then
         log_error "Could not get Lambda function name from Pulumi stack"
         exit 1
     fi
-    
+
     log_info "Function name: $FUNCTION_NAME"
 }
 
 # Update environment variables
 update_env_vars() {
     log_info "Updating Lambda environment variables..."
-    
+
     # Source the .env file to get values
     if [ -f .env ]; then
         export $(cat .env | xargs)
@@ -57,25 +57,25 @@ update_env_vars() {
         log_error ".env file not found. Please create it with your environment variables."
         exit 1
     fi
-    
+
     # Update Lambda function environment variables using JSON file
     cat > /tmp/env.json << EOF
 {
     "MONGODB_URL": "$MONGODB_URL",
-    "MONGODB_DB_NAME": "$MONGODB_DB_NAME", 
+    "MONGODB_DB_NAME": "$MONGODB_DB_NAME",
     "GEMINI_API_KEY": "$GEMINI_API_KEY",
     "OPENAI_API_KEY": "$OPENAI_API_KEY",
     "ENVIRONMENT": "development"
 }
 EOF
-    
+
     aws lambda update-function-configuration \
         --function-name "$FUNCTION_NAME" \
         --environment Variables=file:///tmp/env.json \
         --region $REGION
-    
+
     rm /tmp/env.json
-    
+
     log_success "Environment variables updated successfully"
 }
 
