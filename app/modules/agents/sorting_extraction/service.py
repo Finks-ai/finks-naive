@@ -78,7 +78,7 @@ class SortingExtractionService:
 
         # Default sorting contexts
         if "companies" in query_lower and "billion" in query_lower:
-            return "market_cap"
+            return "market_capitalization"
         elif "profitable" in query_lower:
             return "ttm_net_income"
         elif "revenue" in query_lower or "sales" in query_lower:

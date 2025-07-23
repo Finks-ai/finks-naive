@@ -65,12 +65,20 @@ For valuation ratio fields (P/E, P/B, P/S, P/FCF, EV/EBITDA, EV/Sales):
 - This applies to: ttm_price_to_earnings_ratio, ttm_price_to_book_ratio, ttm_price_to_sales_ratio,
   ttm_price_to_free_cash_flow_ratio, ttm_ev_to_ebitda, ttm_ev_to_sales
 
+CRITICAL: Market Capitalization Handling:
+- ALWAYS include "$gt": 0 when filtering market_capitalization to exclude defunct/delisted companies
+- When user asks for "small cap" or "smallest", generate: {{"market_capitalization": {{"$gt": 0, "$lt": 300000000}}}}
+- When user asks for ANY market cap range, always add "$gt": 0
+- Example: "market_capitalization < 300M" → {{"market_capitalization": {{"$gt": 0, "$lt": 300000000}}}}
+- Only exclude the "$gt": 0 if user explicitly asks for companies with zero market cap
+
 Examples:
 - "ttm_price_to_earnings_ratio < 15" → {{"ttm_price_to_earnings_ratio": {{"$gt": 0, "$lt": 15}}}}
 - "ttm_net_profit_margin > 0.25" → {{"ttm_net_profit_margin": {{"$gt": 0.25}}}}
 - "company_sector is Technology" → {{"company_sector": "Technology"}}
 - "company_sector is banks" → {{"company_sector": "Financial Services"}} (use exact values from categorical list)
 - "market_capitalization > 10B" → {{"market_capitalization": {{"$gt": 10000000000}}}}
+- "market_capitalization < 300M" → {{"market_capitalization": {{"$gt": 0, "$lt": 300000000}}}}
 - "exchange_acronym in US exchanges" → {{"exchange_acronym": {{"$in": {us_exchanges}}}}}
 
 SPECIAL HANDLING for exchange_acronym:

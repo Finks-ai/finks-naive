@@ -12,12 +12,12 @@ GUIDELINES = """Common sorting patterns:
 - "rank by X" → implies sorting
 
 Field mapping hints:
-- "biggest/largest companies" → market_cap
-- "most profitable" → ttm_net_income or net_profit_margin
-- "highest revenue/sales" → ttm_revenue
-- "best performing" → price_change_percentage_YTD or price_change_percentage_1year
-- "most expensive/cheapest" → pe_ratio (expensive=high, cheap=low)
-- "highest dividend" → dividend_rate or dividend_yield"""
+- "biggest/largest companies" → market_capitalization
+- "most profitable" → ttm_net_profit_margin
+- "highest revenue/sales" → year_over_year_quarterly_revenue_growth
+- "best performing" → price_change_yeartodate_percentage or price_change_1year_percentage
+- "most expensive/cheapest" → ttm_price_to_earnings_ratio (expensive=high, cheap=low)
+- "highest dividend" → ttm_dividend_yield"""
 
 SORTING_PATTERNS = {
     "descending_indicators": [
@@ -63,36 +63,36 @@ SORTING_PATTERNS = {
 }
 
 DEFAULT_FIELD_MAPPINGS = {
-    "market cap": "market_cap",
-    "valuation": "market_cap",
-    "size": "market_cap",
-    "revenue": "ttm_revenue",
-    "sales": "ttm_revenue",
-    "profit": "ttm_net_income",
-    "earnings": "ttm_net_income",
-    "profitability": "net_profit_margin",
-    "margin": "net_profit_margin",
-    "pe": "pe_ratio",
-    "price to earnings": "pe_ratio",
-    "dividend": "dividend_yield",
-    "dividend yield": "dividend_yield",
-    "performance": "price_change_percentage_YTD",
-    "return": "price_change_percentage_YTD",
+    "market cap": "market_capitalization",
+    "valuation": "market_capitalization",
+    "size": "market_capitalization",
+    "revenue": "year_over_year_quarterly_revenue_growth",
+    "sales": "year_over_year_quarterly_revenue_growth",
+    "profit": "ttm_net_profit_margin",
+    "earnings": "ttm_net_profit_margin",
+    "profitability": "ttm_net_profit_margin",
+    "margin": "ttm_net_profit_margin",
+    "pe": "ttm_price_to_earnings_ratio",
+    "price to earnings": "ttm_price_to_earnings_ratio",
+    "dividend": "ttm_dividend_yield",
+    "dividend yield": "ttm_dividend_yield",
+    "performance": "price_change_yeartodate_percentage",
+    "return": "price_change_yeartodate_percentage",
     "growth": "year_over_year_quarterly_revenue_growth",
-    "debt": "total_debt",
-    "assets": "total_assets",
-    "volume": "volume",
+    "debt": "ttm_debt_to_equity_ratio",
+    "assets": "ttm_return_on_assets",
+    "volume": "average_volume",
     "beta": "beta",
-    "roe": "return_on_equity",
-    "return on equity": "return_on_equity",
+    "roe": "ttm_return_on_equity",
+    "return on equity": "ttm_return_on_equity",
 }
 
 CONTEXTUAL_DEFAULTS = {
-    "companies": "market_cap",
-    "stocks": "market_cap",
-    "profitable": "ttm_net_income",
-    "performance": "price_change_percentage_YTD",
-    "dividend": "dividend_yield",
-    "expensive": "pe_ratio",
-    "cheap": "pe_ratio",
+    "companies": "market_capitalization",
+    "stocks": "market_capitalization",
+    "profitable": "ttm_net_profit_margin",
+    "performance": "price_change_yeartodate_percentage",
+    "dividend": "ttm_dividend_yield",
+    "expensive": "ttm_price_to_earnings_ratio",
+    "cheap": "ttm_price_to_earnings_ratio",
 }

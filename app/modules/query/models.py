@@ -22,7 +22,7 @@ class CompanyResult(BaseModel):
     symbol: str = Field(..., description="Stock symbol")
     company_name: str | None = Field(None, description="Company name")
     sector: str | None = Field(None, description="Industry sector")
-    market_cap: float | None = Field(None, description="Market capitalization")
+    market_capitalization: float | None = Field(None, description="Market capitalization")
     pe_ratio: float | None = Field(None, description="Price-to-earnings ratio")
     revenue_growth: float | None = Field(None, description="Revenue growth rate")
 
@@ -35,7 +35,7 @@ class CompanyResult(BaseModel):
                 "symbol": "AAPL",
                 "company_name": "Apple Inc.",
                 "sector": "Technology",
-                "market_cap": 3000000000000,
+                "market_capitalization": 3000000000000,
                 "pe_ratio": 25.5,
                 "revenue_growth": 0.15,
                 "additional_fields": {"debt_to_equity": 0.5, "dividend_yield": 0.02},
@@ -67,7 +67,7 @@ class QueryResponse(BaseModel):
                         "symbol": "AAPL",
                         "company_name": "Apple Inc.",
                         "sector": "Technology",
-                        "market_cap": 3000000000000,
+                        "market_capitalization": 3000000000000,
                         "pe_ratio": 12.5,
                         "revenue_growth": 0.15,
                     }

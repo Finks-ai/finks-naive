@@ -86,7 +86,7 @@ class CollectionNormalizer:
             return {
                 "company_name": "master_profiles",
                 "sector": "master_profiles",
-                "market_cap": "master_profiles",
+                "market_capitalization": "master_profiles",
                 "pe_ratio": "ratios",
                 "revenue_growth": "financials",
             }
@@ -224,11 +224,11 @@ class CollectionNormalizer:
                         pbar.set_postfix(
                             inserted=total_inserted,
                             batch=i // batch_size + 1,
-                            pct=f"{(total_inserted/total_processed)*100:.1f}%",
+                            pct=f"{(total_inserted / total_processed) * 100:.1f}%",
                         )
                     except PyMongoError as e:
                         logger.error(f"Error inserting batch: {e}")
-                        pbar.set_postfix(error=f"Batch {i//batch_size + 1} failed")
+                        pbar.set_postfix(error=f"Batch {i // batch_size + 1} failed")
                 else:
                     pbar.set_postfix(inserted=total_inserted, batch=i // batch_size + 1, no_data=True)
 
@@ -291,9 +291,7 @@ class CollectionNormalizer:
                 "earnings_per_share_diluted": 1,
                 "earnings_per_share_basic": 1,
             },
-        ).hint(
-            "symbol_1"
-        )  # Use symbol index for faster lookup
+        ).hint("symbol_1")  # Use symbol index for faster lookup
 
         # Build optimized lookup structures
         income_data = {}
@@ -443,9 +441,9 @@ async def main():
         # Verify results
         stats = await normalizer.verify_normalization()
 
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print("NORMALIZATION SUMMARY")
-        print(f"{'='*50}")
+        print(f"{'=' * 50}")
         print(f"Total documents created: {stats['total_documents']}")
         print(f"Collections represented: {stats['collections_represented']}")
         print("\nField coverage:")

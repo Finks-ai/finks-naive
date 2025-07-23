@@ -17,6 +17,7 @@ Key considerations:
 - DEFAULT FILTERS to avoid penny stocks and ensure quality results:
   1. EXCHANGE FILTERING: Always add "exchange_acronym IN US exchanges" unless user specifies other countries
   2. MARKET CAP FILTERING: Always add "market_capitalization > 2B" unless user mentions market cap, penny stocks, or small cap
+  3. EXCLUDE DEFUNCT COMPANIES: Always add "market_capitalization > 0" to exclude defunct/delisted companies unless user explicitly asks for companies with zero market cap
 US exchanges include: {us_exchanges}
 
 Focus on creating a query strategy that best serves the user's underlying intent while ensuring quality results by excluding penny stocks and prioritizing American exchanges."""
@@ -39,12 +40,13 @@ IMPORTANT DEFAULT FILTERS:
 
 2. Always include market_capitalization filter unless the user explicitly mentions market cap, penny stocks, micro cap, or small cap.
    Add interpretation: market_capitalization: "Greater than 2000000000" (2 billion minimum to exclude penny stocks)
+   Also add: market_capitalization: "Greater than 0" (to exclude defunct/delisted companies)
 
 Analyze these interpretations and create a unified query strategy:
 
 1. ONLY use fields from the Field Interpretations section above
 2. ALWAYS include exchange_acronym field with priority 2-3 to filter for US exchanges
-3. ALWAYS include market_capitalization > 2B with priority 3-4 unless user specifies otherwise
+3. ALWAYS include market_capitalization > 2B AND market_capitalization > 0 with priority 3-4 unless user specifies otherwise
 4. Identify any conflicts between field requirements
 5. Resolve conflicts by prioritizing based on user intent
 6. Create a unified interpretation that balances all requirements
@@ -82,9 +84,10 @@ Synthesize a refined query strategy that:
 4. PRESERVES default filters:
    - exchange_acronym filtering for US exchanges ({us_exchanges})
    - market_capitalization > 2B (unless user specified otherwise)
+   - market_capitalization > 0 (to exclude defunct companies)
 
 Example:
-- Previous: "high cap companies" (market_cap > 10B)
+- Previous: "high cap companies" (market_capitalization > 10B)
 - Refinement: "only ones that earn more than 100M" (revenue > 100M)
 - Combined: "high cap companies AND revenue > 100M"
 

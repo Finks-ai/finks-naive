@@ -4,6 +4,7 @@ Pipeline step functions - Database execution and other utility steps.
 
 from typing import Any
 
+import pymongo
 from loguru import logger
 
 from app.core.database import get_db_service
@@ -41,10 +42,13 @@ async def execute_database_query(context: dict[str, Any], results: dict[str, Ste
     # Execute query
     cursor = collection.find(query_result.mongodb_query)
 
-    # Apply sorting
+    # Apply sorting using pymongo constants
     if sorting_intent and sorting_intent.has_sorting and sorting_intent.sort_field:
-        sort_direction = -1 if sorting_intent.sort_direction == "desc" else 1
-        logger.info(f"Applying sort: {sorting_intent.sort_field} {'DESC' if sort_direction == -1 else 'ASC'}")
+        # Use pymongo constants for sort direction
+        sort_direction = pymongo.DESCENDING if sorting_intent.sort_direction == "desc" else pymongo.ASCENDING
+        sort_direction_name = "DESCENDING" if sorting_intent.sort_direction == "desc" else "ASCENDING"
+
+        logger.info(f"Applying sort: {sorting_intent.sort_field} {sort_direction_name} (pymongo.{sort_direction_name})")
         cursor = cursor.sort(sorting_intent.sort_field, sort_direction)
 
     # Apply limit
