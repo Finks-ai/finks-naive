@@ -1,11 +1,12 @@
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from loguru import logger
 import asyncio
 
+from app.core.logging import RUN_ID  # JSON log sink, configured on import
 from app.core.config import get_settings
 from app.core.database import get_db_service
 
@@ -82,6 +83,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Finks Signals: every log line of a request carries its `x-finks-run` as `run_id`.
+@app.middleware("http")
+async def bind_finks_run(request: Request, call_next):
+    run_id = request.headers.get("x-finks-run", "")
+    if not RUN_ID.fullmatch(run_id):
+        return await call_next(request)
+    with logger.contextualize(run_id=run_id):
+        return await call_next(request)
 
 # Include routers
 from app.modules.agents.router import router as agents_router

@@ -1,0 +1,24 @@
+# Finks Signals fix profile (finks-signals docs/PLAN.md C7). Read by the Signals fix task at the PR's
+# base commit, never from the patch, so a fix cannot change its own rules; `.finks/**` is always guarded.
+# Removing this file opts the repo out of Signals fix PRs.
+schema_version = 1
+
+[profile.python-service]
+image = "python-uv"
+setup = "uv sync --frozen --extra dev"
+# The repo has no CI; pytest (pyproject `dev` extra) with dummy settings: the app imports with them
+# and nothing connects until a request.
+check_cmd = "MONGODB_URL=mongodb://localhost:27017 MONGODB_DB_NAME=naive GEMINI_API_KEY=unused OPENAI_API_KEY=unused uv run --frozen --extra dev pytest -q"
+test_globs = ["tests/**"]
+guard_paths = [
+  ".github/**",
+  "pulumi/**",
+  "scripts/**",          # deploy and data migration scripts
+  "dockerfile",
+  "pyproject.toml",
+  "uv.lock",
+]
+max_files = 10
+max_usd = 3.0
+pr = { draft = true, reviewers = ["@ionnich"], labels = ["signals"] }
+merge = "owner"
